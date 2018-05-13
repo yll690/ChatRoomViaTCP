@@ -66,6 +66,7 @@ namespace Client
         public static string PassWord = "PassWord";
         public static string NickName = "NickName";
         public static string LoginResult = "LoginResult";
+        public static string SignUpResult = "SignUpResult";
         public static string Content = "Content";
         public static string MessageType = "MessageType";
         public static string IP = "IP";

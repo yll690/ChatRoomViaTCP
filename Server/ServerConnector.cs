@@ -134,7 +134,7 @@ namespace Server
                     }
                 case CommandType.SignUp:
                     {
-                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, messageD[MesKeyStr.PassWord], messageD[MesKeyStr.NickName]));
+                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, messageD[MesKeyStr.NickName], messageD[MesKeyStr.PassWord]));
                         break;
                     }
                 case CommandType.GroupMessage:
@@ -217,7 +217,10 @@ namespace Server
         {
             try
             {
-                Send(socket, (char)CommandType.SignUpResult+";"+userID);
+                MessageDictionary messageD = new MessageDictionary();
+                messageD.Add(MesKeyStr.CommandType, CommandType.SignUpResult.ToString());
+                messageD.Add(MesKeyStr.SignUpResult, userID);
+                Send(socket, messageD.ToString());
                 return true;
             }
             catch (Exception e)

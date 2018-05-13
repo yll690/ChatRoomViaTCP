@@ -29,12 +29,13 @@ namespace Server
             connector.LoginEvent += Connector_LoginEvent;
             connector.LogoutEvent += Connector_LogoutEvent;
             connector.SignUpEvent += Connector_SignUpEvent;
-            connector.GroupMessageEvent += Connector_GroupMessageEvent; ;
+            connector.GroupMessageEvent += Connector_GroupMessageEvent;
+            connector.PrivateMessageEvent += Connector_PrivateMessageEvent;
             connector.DisconnectEvent += Connector_DisconnectEvent;
             connector.ServerClosingEvent += Connector_ServerClosingEvent;
             log = connector.log;
         }
-
+        
         void ShowMessage(string s)
         {
             if (log)
@@ -48,9 +49,11 @@ namespace Server
             string[] lines;
             if (File.Exists(defaultAccountPath))
             {
-                lines = File.ReadAllLines(defaultAccountPath);
+                lines = File.ReadAllLines(defaultAccountPath, Encoding.Default);
                 foreach (string line in lines)
                 {
+                    if (line.Equals("\n"))
+                        continue;
                     AccountList.Add(Account.Parse(line));
                 }
             }
@@ -139,6 +142,24 @@ namespace Server
                 connector.SendMessage(u.Socket, e);
             }
         }
+
+        private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
+        {
+            for (int i = 0; i < LoginedUserList.Count; i++)
+            {
+                if (LoginedUserList[i].UserID == e[MesKeyStr.TargetUserID])
+                {
+                    UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);
+                    string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
+                    e.Add(MesKeyStr.NickName, user.NickName);
+                    e.Add(MesKeyStr.IP, ip);
+                    e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
+                    MessageArrivedEvent?.Invoke(this, e);
+                    connector.SendMessage(LoginedUserList[i].Socket, e);
+                }
+            }
+        }
+
         private void Connector_SignUpEvent(object sender, SignUpEventArgs e)
         {
             string userID;
@@ -152,7 +173,7 @@ namespace Server
             try
             {
                 FileStream fileStream = File.Open(defaultAccountPath, FileMode.Append);
-                byte[] buffer = Encoding.Default.GetBytes("\n" + account.ToString());
+                byte[] buffer = Encoding.Default.GetBytes(account.ToString() + "\n");
                 fileStream.Write(buffer, 0, buffer.Length);
                 fileStream.Close();
             }
