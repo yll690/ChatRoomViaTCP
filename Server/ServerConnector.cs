@@ -21,9 +21,6 @@ namespace Server
 
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         
-        public delegate void PrivateMessageEH(object sender, string targetUserIP, Socket socket);
-
-        //public event EventHandler<ChatMessageSend> GroupMessageEvent;
         public event EventHandler<MessageD> GroupMessageEvent;
         public event EventHandler<MessageD> PrivateMessageEvent;
         public event EventHandler<LoginEventArgs> LoginEvent;
@@ -119,66 +116,12 @@ namespace Server
             return infos;
         }
 
-        //private void MessageSorter(byte[] buffer,int start, int length, Socket clientSocket)
-        //{
-        //    string content = Encoding.Default.GetString(buffer, 0, length);
-        //    ShowMessage("从" + clientSocket.RemoteEndPoint.ToString() + "接收消息：" + content + "\n");
-        //    string[] contents = content.Split(separator);
-        //    CommandType command = (CommandType)contents[0][0];
-
-        //    switch (command)
-        //    {
-        //        case CommandType.Login:
-        //            {
-        //                LoginEvent?.Invoke(this, new LoginEventArgs()
-        //                {
-        //                    UserID = contents[1],
-        //                    PassWord = contents[2],
-        //                    ReceiveSocket = clientSocket
-        //                });
-
-        //                break;
-        //            }
-        //        case CommandType.Logout:
-        //            {
-        //                LogoutEvent?.Invoke(this, new User(contents[1], contents[2]));
-        //                break;
-        //            }
-        //        case CommandType.SignUp:
-        //            {
-        //                SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, contents[1], contents[2]));
-        //                break;
-        //            }
-        //        case CommandType.GroupMessage:
-        //            {
-        //                GroupMessageEvent?.Invoke(this, ChatMessageSend.Parse(RemoveCommand(contents)));
-        //                break;
-        //            }
-        //        case CommandType.PrivateMessage:
-        //            {
-        //                PrivateMessageEvent?.Invoke(this, ChatMessageSend.Parse(RemoveCommand(contents)));
-        //                break;
-        //            }
-        //        case CommandType.UserJoin:
-        //        case CommandType.UserQuit:
-        //        case CommandType.LoginResult:
-        //        case CommandType.SignUpResult:
-        //        case CommandType.ServerDisconnect:
-        //        case CommandType.Remove:
-        //            {
-        //                ShowMessage("收到错误的消息类型！");
-        //                throw new Exception("收到错误的消息类型！");
-        //            }
-
-        //    }
-        //}
-
         private void MessageSorter(byte[] buffer, int start, int length, Socket clientSocket)
         {
             string content = Encoding.Default.GetString(buffer, 0, length);
             ShowMessage("从" + clientSocket.RemoteEndPoint.ToString() + "接收消息：" + content + "\n");
             MessageD messageD = new MessageD(content);
-            CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD["CommandType"]);
+            CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD[MesKeyStr.CommandType]);
 
             switch (command)
             {
@@ -186,8 +129,8 @@ namespace Server
                     {
                         LoginEvent?.Invoke(this, new LoginEventArgs()
                         {
-                            UserID = messageD["UserID"],
-                            PassWord = messageD["PassWord"],
+                            UserID = messageD[MesKeyStr.UserID],
+                            PassWord = messageD[MesKeyStr.PassWord],
                             ReceiveSocket = clientSocket
                         });
 
@@ -195,12 +138,12 @@ namespace Server
                     }
                 case CommandType.Logout:
                     {
-                        LogoutEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
+                        LogoutEvent?.Invoke(this, new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]));
                         break;
                     }
                 case CommandType.SignUp:
                     {
-                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, messageD["PassWord"], messageD["NickName"])));
+                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, messageD[MesKeyStr.PassWord], messageD[MesKeyStr.NickName]));
                         break;
                     }
                 case CommandType.GroupMessage:
@@ -265,15 +208,12 @@ namespace Server
         {
             try
             {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.Append((char)CommandType.LoginResult);
-                stringBuilder.Append(separator);
-                stringBuilder.Append(result.ToString());
-                stringBuilder.Append(separator);
-                stringBuilder.Append(userSocket.UserID);
-                stringBuilder.Append(separator);
-                stringBuilder.Append(userSocket.NickName);
-                Send(userSocket.Socket, stringBuilder.ToString());
+                MessageD messageD = new MessageD();
+                messageD.Add(MesKeyStr.CommandType, CommandType.LoginResult.ToString());
+                messageD.Add(MesKeyStr.LoginResult, result.ToString());
+                messageD.Add(MesKeyStr.UserID, userSocket.UserID);
+                messageD.Add(MesKeyStr.NickName, userSocket.NickName);
+                Send(userSocket.Socket, messageD.ToString());
                 return true;
             }
             catch (Exception e)
@@ -299,21 +239,19 @@ namespace Server
 
         public bool SendUserChange(UserSocket oldUserSocket, User newUser, CommandType commandType)
         {
-            StringBuilder stringBuilder = new StringBuilder();
             if (commandType != CommandType.UserJoin && commandType != CommandType.UserQuit)
             {
-                //throw new Exception("发送用户变化错误，非法的命令类型");
                 ShowMessage("发送用户变化错误，非法的命令类型");
                 return false;
             }
-            stringBuilder.Append((char)commandType);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(newUser.UserID);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(newUser.NickName);
+
+            MessageD messageD = new MessageD();
+            messageD.Add(MesKeyStr.CommandType, CommandType.LoginResult.ToString());
+            messageD.Add(MesKeyStr.UserID, newUser.UserID);
+            messageD.Add(MesKeyStr.NickName, newUser.NickName);
             try
             {
-                Send(oldUserSocket.Socket, stringBuilder.ToString());
+                Send(oldUserSocket.Socket, messageD.ToString());
                 return true;
             }
             catch (Exception e)
@@ -325,7 +263,9 @@ namespace Server
 
         public bool SendServerClosingMessage(Socket socket)
         {
-            return Send(socket, ((char)CommandType.ServerDisconnect).ToString());
+            MessageD messageD = new MessageD();
+            messageD.Add(MesKeyStr.CommandType, CommandType.ServerDisconnect.ToString());
+            return Send(socket, messageD.ToString());
         }
 
         public void Close()

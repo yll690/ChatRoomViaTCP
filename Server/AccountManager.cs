@@ -139,11 +139,11 @@ namespace Server
         //}
         private void Connector_GroupMessageEvent(object sender, MessageD e)
         {
-            UserSocket user = GetUserSocket(e["UserID"]);
+            UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);
             string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
-            e.Add("NickName", user.NickName);
-            e.Add("IP", ip);
-            e.Add("DateTime", DateTime.Now.ToString());
+            e.Add(MesKeyStr.NickName, user.NickName);
+            e.Add(MesKeyStr.IP, ip);
+            e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
             MessageArrivedEvent?.Invoke(this, e);
             foreach (UserSocket u in LoginedUserList)
             {

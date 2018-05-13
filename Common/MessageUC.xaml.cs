@@ -47,10 +47,10 @@ namespace Client
         void DisplayWithNoStyle()
         {
             contentTB.ToolTip = ChatMessageP[MesKeyStr.Content];
-            contentTB.Text = ChatMessageP["Content"];
-            nickNameL.Content = ChatMessageP["NickName"] + "(" + ChatMessageP["UserID"] + ")";
-            ipAdressL.Content = ChatMessageP["IP"];
-            timeL.Content = ChatMessageP["DateTime"];
+            contentTB.Text = ChatMessageP[MesKeyStr.Content];
+            nickNameL.Content = ChatMessageP[MesKeyStr.NickName] + "(" + ChatMessageP[MesKeyStr.UserID] + ")";
+            ipAdressL.Content = ChatMessageP[MesKeyStr.IP];
+            timeL.Content = ChatMessageP[MesKeyStr.DateTime];
         }
 
         void Display()
@@ -59,20 +59,20 @@ namespace Client
             FontFamilyConverter fontFamilyConverter = new FontFamilyConverter();
             try
             {
-                contentTB.FontFamily = (FontFamily)fontFamilyConverter.ConvertFromString(ChatMessageP.FontFamily);
+                contentTB.FontFamily = (FontFamily)fontFamilyConverter.ConvertFromString(ChatMessageP[MesKeyStr.FontFamily]);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message + e.StackTrace);
             }
-            contentTB.FontSize = int.Parse( ChatMessageP["FontSize"]);
-            if (int.Parse(ChatMessageP["FontStyle"]) % 10 == 1)
+            contentTB.FontSize = int.Parse( ChatMessageP[MesKeyStr.FontSize]);
+            if (int.Parse(ChatMessageP[MesKeyStr.FontStyle]) % 10 == 1)
                 contentTB.FontWeight = FontWeights.Bold;
-            if (int.Parse(ChatMessageP["FontStyle"]) / 10 % 10 == 1)
+            if (int.Parse(ChatMessageP[MesKeyStr.FontStyle]) / 10 % 10 == 1)
                 contentTB.FontStyle = FontStyles.Italic;
-            if (int.Parse(ChatMessageP["FontStyle"]) / 100 % 10 == 1)
+            if (int.Parse(ChatMessageP[MesKeyStr.FontStyle]) / 100 % 10 == 1)
                 contentTB.TextDecorations = TextDecorations.Underline;
-            contentTB.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChatMessageP.FontColor));
+            contentTB.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChatMessageP[MesKeyStr.FontColor]));
         }
     }
 }

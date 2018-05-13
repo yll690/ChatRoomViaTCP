@@ -83,92 +83,20 @@ namespace Client
             return infos;
         }
 
-        //private void MessageSorter(byte[] buffer, int start, int length)
-        //{
-        //    string content = Encoding.Default.GetString(buffer, start, length);
-        //    ShowMessage("接收消息：" + content + "\n");
-        //    string[] contents = content.Split(separator);
-        //    CommandType command = (CommandType)contents[0][0];
-
-        //    switch (command)
-        //    {
-        //        case CommandType.LoginResult:
-        //            {
-        //                if (contents[1][0] == 'T')
-        //                {
-        //                    ((App)Application.Current).user = new User(contents[2], contents[3]);
-        //                    isLogined = true;
-        //                    LoginEvent?.Invoke(this, true);
-        //                    //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
-        //                }
-        //                else
-        //                {
-        //                    isLogined = false;
-        //                    LoginEvent?.Invoke(this, false);
-        //                }
-        //                break;
-        //            }
-        //        case CommandType.SignUpResult:
-        //            {
-        //                SignupResultEvent?.Invoke(this, contents[1]);
-        //                break;
-        //            }
-        //        case CommandType.GroupMessage:
-        //            {
-        //                GroupMessageEvent?.Invoke(this, ChatMessage.Parse(RemoveCommand(contents)));
-        //                break;
-        //            }
-        //        case CommandType.PrivateMessage:
-        //            {
-
-        //                break;
-        //            }
-        //        case CommandType.UserJoin:
-        //            {
-        //                UserJoinEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
-        //                break;
-        //            }
-        //        case CommandType.UserQuit:
-        //            {
-        //                UserQuitEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
-        //                break;
-        //            }
-        //        case CommandType.ServerDisconnect:
-        //            {
-        //                ServerDisconnectEvent?.Invoke(this, new EventArgs());
-        //                Close();
-        //                break;
-        //            }
-        //        case CommandType.Remove:
-        //            {
-        //                ServerDisconnectEvent?.Invoke(this, new EventArgs());
-        //                Close();
-        //                break;
-        //            }
-        //        case CommandType.Login:
-        //        case CommandType.Logout:
-        //        case CommandType.SignUp:
-        //            {
-        //                ShowMessage("收到错误的消息类型！");
-        //                throw new Exception("收到错误的消息类型！");
-        //                break;
-        //            }
-        //    }
-        //}
         private void MessageSorter(byte[] buffer, int start, int length)
         {
             string content = Encoding.Default.GetString(buffer, start, length);
             ShowMessage("接收消息：" + content + "\n");
             MessageD messageD = new MessageD(content);
-            CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD["CommandType"]);
+            CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD[MesKeyStr.CommandType]);
 
             switch (command)
             {
                 case CommandType.LoginResult:
                     {
-                        if (messageD["LoginResult"].Equals("True"))
+                        if (messageD[MesKeyStr.LoginResult].Equals("True"))
                         {
-                            ((App)Application.Current).user = new User(messageD["UserID"], ["NickName"]);
+                            ((App)Application.Current).user = new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]);
                             isLogined = true;
                             LoginEvent?.Invoke(this, true);
                             //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
@@ -182,7 +110,7 @@ namespace Client
                     }
                 case CommandType.SignUpResult:
                     {
-                        SignupResultEvent?.Invoke(this, messageD["UserID"]);
+                        SignupResultEvent?.Invoke(this, messageD[MesKeyStr.UserID]);
                         break;
                     }
                 case CommandType.GroupMessage:
@@ -197,12 +125,12 @@ namespace Client
                     }
                 case CommandType.UserJoin:
                     {
-                        UserJoinEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
+                        UserJoinEvent?.Invoke(this, new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]));
                         break;
                     }
                 case CommandType.UserQuit:
                     {
-                        UserQuitEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
+                        UserQuitEvent?.Invoke(this, new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]));
                         break;
                     }
                 case CommandType.ServerDisconnect:
@@ -280,15 +208,13 @@ namespace Client
 
         public bool Login(string userID, string password)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append((char)CommandType.Login);
-            sb.Append(separator);
-            sb.Append(userID);
-            sb.Append(separator);
-            sb.Append(password);
+            MessageD messageD = new MessageD();
+            messageD.Add(MesKeyStr.CommandType, CommandType.Login.ToString());
+            messageD.Add(MesKeyStr.UserID,userID);
+            messageD.Add(MesKeyStr.PassWord,password);
             try
             {
-                if (Send(sb.ToString()) == false)
+                if (Send(messageD.ToString(separator)) == false)
                     return false;
                 return true;
             }
@@ -302,31 +228,22 @@ namespace Client
         public void Logout()
         {
             User user = ((App)Application.Current).user;
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append((char)CommandType.Logout);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(user.UserID);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(user.NickName);
-            Send(stringBuilder.ToString());
+            MessageD messageD = new MessageD();
+            messageD.Add(MesKeyStr.CommandType, CommandType.Logout.ToString());
+            messageD.Add(MesKeyStr.UserID, user.UserID);
+            messageD.Add(MesKeyStr.NickName, user.NickName);
+            Send(messageD.ToString());
             Close();
         }
 
         public void SignUp(string nickName, string password)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append((char)CommandType.SignUp);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(nickName);
-            stringBuilder.Append(separator);
-            stringBuilder.Append(password);
-            Send(stringBuilder.ToString());
+            MessageD messageD = new MessageD();
+            messageD.Add(MesKeyStr.CommandType, CommandType.SignUp.ToString());
+            messageD.Add(MesKeyStr.NickName, nickName);
+            messageD.Add(MesKeyStr.PassWord, password);
+            Send(messageD.ToString());
         }
-
-        //public bool SendMessage(ChatMessageSend message)
-        //{
-        //    return Send((char)CommandType.GroupMessage + "" + separator + message.ToString(separator));
-        //}
 
         public bool SendMessage(MessageD message)
         {

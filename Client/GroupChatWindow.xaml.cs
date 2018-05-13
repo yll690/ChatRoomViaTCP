@@ -100,25 +100,14 @@ namespace Client
             if (isItalic) style += 10;
             if (isUnderLine) style += 100;
 
-            //ChatMessageSend message = new ChatMessageSend()
-            //{
-            //    MessageType = MessageType.Text,
-            //    UserID = user.UserID,
-            //    Content = contentTB.Text,
-            //    FontFamily = (string)fontFamilyCB.SelectedItem,
-            //    FontSize = int.Parse(((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString()),
-            //    FontStyle = style,
-            //    FontColor = fontColor,
-            //};
-
             MessageD message = new MessageD();
-            message.Add("MessageType", "Text");
-            message.Add("UserID", user.UserID);
-            message.Add("Content", contentTB.Text);
-            message.Add("FontFamily", (string)fontFamilyCB.SelectedItem);
-            message.Add("FontSize", ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
-            message.Add("FontStyle", style.ToString());
-            message.Add("FontColor", fontColor);
+            message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
+            message.Add(MesKeyStr.UserID, user.UserID);
+            message.Add(MesKeyStr.Content, contentTB.Text);
+            message.Add(MesKeyStr.FontFamily, (string)fontFamilyCB.SelectedItem);
+            message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
+            message.Add(MesKeyStr.FontStyle, style.ToString());
+            message.Add(MesKeyStr.FontColor, fontColor);
 
             connector.SendMessage(message);
             contentTB.Text = "";
