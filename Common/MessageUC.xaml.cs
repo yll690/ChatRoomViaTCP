@@ -20,9 +20,9 @@ namespace Client
     /// </summary>
     public partial class MessageUC : UserControl
     {
-        public ChatMessage ChatMessageP { get;private set; }
+        public MessageD ChatMessageP { get;private set; }
 
-        public MessageUC(ChatMessage message, bool displayStyle)
+        public MessageUC(MessageD message, bool displayStyle)
         {
             InitializeComponent();
             ChatMessageP = message;
@@ -37,7 +37,7 @@ namespace Client
             }
         }
 
-        public MessageUC(ChatMessage message)
+        public MessageUC(MessageD message)
         {
             InitializeComponent();
             ChatMessageP = message;
@@ -46,11 +46,11 @@ namespace Client
 
         void DisplayWithNoStyle()
         {
-            contentTB.ToolTip = ChatMessageP.Content;
-            contentTB.Text = ChatMessageP.Content;
-            nickNameL.Content = ChatMessageP.NickName + "(" + ChatMessageP.UserID + ")";
-            ipAdressL.Content = ChatMessageP.IP;
-            timeL.Content = ChatMessageP.Time;
+            contentTB.ToolTip = ChatMessageP[MesKeyStr.Content];
+            contentTB.Text = ChatMessageP["Content"];
+            nickNameL.Content = ChatMessageP["NickName"] + "(" + ChatMessageP["UserID"] + ")";
+            ipAdressL.Content = ChatMessageP["IP"];
+            timeL.Content = ChatMessageP["DateTime"];
         }
 
         void Display()
@@ -65,12 +65,12 @@ namespace Client
             {
                 MessageBox.Show(e.Message + e.StackTrace);
             }
-            contentTB.FontSize = ChatMessageP.FontSize;
-            if (ChatMessageP.FontStyle % 10 == 1)
+            contentTB.FontSize = int.Parse( ChatMessageP["FontSize"]);
+            if (int.Parse(ChatMessageP["FontStyle"]) % 10 == 1)
                 contentTB.FontWeight = FontWeights.Bold;
-            if (ChatMessageP.FontStyle / 10 % 10 == 1)
+            if (int.Parse(ChatMessageP["FontStyle"]) / 10 % 10 == 1)
                 contentTB.FontStyle = FontStyles.Italic;
-            if (ChatMessageP.FontStyle / 100 % 10 == 1)
+            if (int.Parse(ChatMessageP["FontStyle"]) / 100 % 10 == 1)
                 contentTB.TextDecorations = TextDecorations.Underline;
             contentTB.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChatMessageP.FontColor));
         }

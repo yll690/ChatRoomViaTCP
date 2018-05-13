@@ -97,7 +97,7 @@ namespace Server
             });
         }
 
-        private void Manager_MessageArrivedEvent(object sender, ChatMessage e)
+        private void Manager_MessageArrivedEvent(object sender, MessageD e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

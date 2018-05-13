@@ -25,7 +25,7 @@ namespace Server
 
         //public event EventHandler<ChatMessageSend> GroupMessageEvent;
         public event EventHandler<MessageD> GroupMessageEvent;
-        public event PrivateMessageEH PrivateMessageEvent;
+        public event EventHandler<MessageD> PrivateMessageEvent;
         public event EventHandler<LoginEventArgs> LoginEvent;
         public event EventHandler<SignUpEventArgs> SignUpEvent;
         public event EventHandler<User> LogoutEvent;
@@ -186,8 +186,8 @@ namespace Server
                     {
                         LoginEvent?.Invoke(this, new LoginEventArgs()
                         {
-                            UserID = contents[1],
-                            PassWord = contents[2],
+                            UserID = messageD["UserID"],
+                            PassWord = messageD["PassWord"],
                             ReceiveSocket = clientSocket
                         });
 
@@ -195,22 +195,22 @@ namespace Server
                     }
                 case CommandType.Logout:
                     {
-                        LogoutEvent?.Invoke(this, new User(contents[1], contents[2]));
+                        LogoutEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
                         break;
                     }
                 case CommandType.SignUp:
                     {
-                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, contents[1], contents[2]));
+                        SignUpEvent?.Invoke(this, new SignUpEventArgs(clientSocket, messageD["PassWord"], messageD["NickName"])));
                         break;
                     }
                 case CommandType.GroupMessage:
                     {
-                        GroupMessageEvent?.Invoke(this, ChatMessageSend.Parse(RemoveCommand(contents)));
+                        GroupMessageEvent?.Invoke(this, messageD);
                         break;
                     }
                 case CommandType.PrivateMessage:
                     {
-                        PrivateMessageEvent?.Invoke(this, ChatMessageSend.Parse(RemoveCommand(contents)));
+                        PrivateMessageEvent?.Invoke(this, messageD);
                         break;
                     }
                 case CommandType.UserJoin:
@@ -250,9 +250,9 @@ namespace Server
             return Send(socket, bytes, bytes.Length);
         }
 
-        public bool SendMessage(Socket socket, ChatMessage chatMessage)
+        public bool SendMessage(Socket socket, MessageD chatMessage)
         {
-            if (Send(socket, (char)CommandType.GroupMessage + "" + separator + chatMessage.ToString(separator)))
+            if (Send(socket, chatMessage.ToString()))
                 return true;
             else
             {

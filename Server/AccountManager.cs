@@ -20,7 +20,7 @@ namespace Server
 
         public event EventHandler<User> UserJoinEvent;
         public event EventHandler<User> UserQuitEvent;
-        public event EventHandler<ChatMessage> MessageArrivedEvent;
+        public event EventHandler<MessageD> MessageArrivedEvent;
         public event EventHandler<string> LogEvent;
 
         public AccountManager()
@@ -126,18 +126,30 @@ namespace Server
             }
         }
 
-        private void Connector_GroupMessageEvent(object sender, ChatMessageSend e)
+        //private void Connector_GroupMessageEvent(object sender, ChatMessageSend e)
+        //{
+        //    UserSocket user = GetUserSocket(e.UserID);
+        //    string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
+        //    ChatMessage chatMessage = new ChatMessage(e, user.NickName, ip, DateTime.Now.ToString());
+        //    MessageArrivedEvent?.Invoke(this, chatMessage);
+        //    foreach (UserSocket u in LoginedUserList)
+        //    {
+        //        connector.SendMessage(u.Socket, chatMessage);
+        //    }
+        //}
+        private void Connector_GroupMessageEvent(object sender, MessageD e)
         {
-            UserSocket user = GetUserSocket(e.UserID);
+            UserSocket user = GetUserSocket(e["UserID"]);
             string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
-            ChatMessage chatMessage = new ChatMessage(e, user.NickName, ip, DateTime.Now.ToString());
-            MessageArrivedEvent?.Invoke(this, chatMessage);
+            e.Add("NickName", user.NickName);
+            e.Add("IP", ip);
+            e.Add("DateTime", DateTime.Now.ToString());
+            MessageArrivedEvent?.Invoke(this, e);
             foreach (UserSocket u in LoginedUserList)
             {
-                connector.SendMessage(u.Socket, chatMessage);
+                connector.SendMessage(u.Socket, e);
             }
         }
-
         private void Connector_SignUpEvent(object sender, SignUpEventArgs e)
         {
             string userID;

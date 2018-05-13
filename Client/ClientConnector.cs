@@ -25,8 +25,8 @@ namespace Client
         int bufferLength = 5 * 1024;
         Thread receiveThread;
 
-        public event EventHandler<ChatMessage> GroupMessageEvent;
-        public event EventHandler<ChatMessage> PrivateMessageEvent;
+        public event EventHandler<MessageD> GroupMessageEvent;
+        public event EventHandler<MessageD> PrivateMessageEvent;
         public event EventHandler<bool> LoginEvent;
         public event EventHandler<string> SignupResultEvent;
         public event EventHandler<User> UserJoinEvent;
@@ -83,20 +83,92 @@ namespace Client
             return infos;
         }
 
+        //private void MessageSorter(byte[] buffer, int start, int length)
+        //{
+        //    string content = Encoding.Default.GetString(buffer, start, length);
+        //    ShowMessage("接收消息：" + content + "\n");
+        //    string[] contents = content.Split(separator);
+        //    CommandType command = (CommandType)contents[0][0];
+
+        //    switch (command)
+        //    {
+        //        case CommandType.LoginResult:
+        //            {
+        //                if (contents[1][0] == 'T')
+        //                {
+        //                    ((App)Application.Current).user = new User(contents[2], contents[3]);
+        //                    isLogined = true;
+        //                    LoginEvent?.Invoke(this, true);
+        //                    //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
+        //                }
+        //                else
+        //                {
+        //                    isLogined = false;
+        //                    LoginEvent?.Invoke(this, false);
+        //                }
+        //                break;
+        //            }
+        //        case CommandType.SignUpResult:
+        //            {
+        //                SignupResultEvent?.Invoke(this, contents[1]);
+        //                break;
+        //            }
+        //        case CommandType.GroupMessage:
+        //            {
+        //                GroupMessageEvent?.Invoke(this, ChatMessage.Parse(RemoveCommand(contents)));
+        //                break;
+        //            }
+        //        case CommandType.PrivateMessage:
+        //            {
+
+        //                break;
+        //            }
+        //        case CommandType.UserJoin:
+        //            {
+        //                UserJoinEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
+        //                break;
+        //            }
+        //        case CommandType.UserQuit:
+        //            {
+        //                UserQuitEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
+        //                break;
+        //            }
+        //        case CommandType.ServerDisconnect:
+        //            {
+        //                ServerDisconnectEvent?.Invoke(this, new EventArgs());
+        //                Close();
+        //                break;
+        //            }
+        //        case CommandType.Remove:
+        //            {
+        //                ServerDisconnectEvent?.Invoke(this, new EventArgs());
+        //                Close();
+        //                break;
+        //            }
+        //        case CommandType.Login:
+        //        case CommandType.Logout:
+        //        case CommandType.SignUp:
+        //            {
+        //                ShowMessage("收到错误的消息类型！");
+        //                throw new Exception("收到错误的消息类型！");
+        //                break;
+        //            }
+        //    }
+        //}
         private void MessageSorter(byte[] buffer, int start, int length)
         {
             string content = Encoding.Default.GetString(buffer, start, length);
             ShowMessage("接收消息：" + content + "\n");
-            string[] contents = content.Split(separator);
-            CommandType command = (CommandType)contents[0][0];
+            MessageD messageD = new MessageD(content);
+            CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD["CommandType"]);
 
             switch (command)
             {
                 case CommandType.LoginResult:
                     {
-                        if (contents[1][0] == 'T')
+                        if (messageD["LoginResult"].Equals("True"))
                         {
-                            ((App)Application.Current).user = new User(contents[2], contents[3]);
+                            ((App)Application.Current).user = new User(messageD["UserID"], ["NickName"]);
                             isLogined = true;
                             LoginEvent?.Invoke(this, true);
                             //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
@@ -110,27 +182,27 @@ namespace Client
                     }
                 case CommandType.SignUpResult:
                     {
-                        SignupResultEvent?.Invoke(this, contents[1]);
+                        SignupResultEvent?.Invoke(this, messageD["UserID"]);
                         break;
                     }
                 case CommandType.GroupMessage:
                     {
-                        GroupMessageEvent?.Invoke(this, ChatMessage.Parse(RemoveCommand(contents)));
+                        GroupMessageEvent?.Invoke(this, messageD);
                         break;
                     }
                 case CommandType.PrivateMessage:
                     {
-
+                        PrivateMessageEvent?.Invoke(this, messageD);
                         break;
                     }
                 case CommandType.UserJoin:
                     {
-                        UserJoinEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
+                        UserJoinEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
                         break;
                     }
                 case CommandType.UserQuit:
                     {
-                        UserQuitEvent?.Invoke(this, User.Parse(RemoveCommand(contents)));
+                        UserQuitEvent?.Invoke(this, new User(messageD["UserID"], messageD["NickName"]));
                         break;
                     }
                 case CommandType.ServerDisconnect:

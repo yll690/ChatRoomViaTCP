@@ -315,7 +315,7 @@ namespace Client
             });
         }
 
-        private void Connector_GroupMessageEvent(object sender, ChatMessage e)
+        private void Connector_GroupMessageEvent(object sender, MessageD e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

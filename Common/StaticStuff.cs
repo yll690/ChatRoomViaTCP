@@ -57,4 +57,20 @@ namespace Client
             }
         }
     }
+
+    public static class MesKeyStr
+    {
+        public static string CommandType = "CommandType";
+        public static string UserID = "UserID";
+        public static string PassWord = "PassWord";
+        public static string NickName = "NickName";
+        public static string LoginResult = "LoginResult";
+        public static string Content = "Content";
+        public static string MessageType = "MessageType";
+        public static string IP = "IP";
+        public static string DateTime = "DateTime";
+        public static string FontStyle = "FontStyle";
+        public static string FontSize = "FontSize";
+        public static string FontFamily = "FontFamily";
+    }
 }
