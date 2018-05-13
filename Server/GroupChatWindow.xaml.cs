@@ -97,7 +97,7 @@ namespace Server
             });
         }
 
-        private void Manager_MessageArrivedEvent(object sender, MessageD e)
+        private void Manager_MessageArrivedEvent(object sender, MessageDictionary e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {

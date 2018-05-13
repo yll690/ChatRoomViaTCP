@@ -20,7 +20,7 @@ namespace Server
 
         public event EventHandler<User> UserJoinEvent;
         public event EventHandler<User> UserQuitEvent;
-        public event EventHandler<MessageD> MessageArrivedEvent;
+        public event EventHandler<MessageDictionary> MessageArrivedEvent;
         public event EventHandler<string> LogEvent;
 
         public AccountManager()
@@ -137,7 +137,7 @@ namespace Server
         //        connector.SendMessage(u.Socket, chatMessage);
         //    }
         //}
-        private void Connector_GroupMessageEvent(object sender, MessageD e)
+        private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
         {
             UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);
             string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();

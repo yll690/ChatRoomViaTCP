@@ -62,6 +62,7 @@ namespace Client
     {
         public static string CommandType = "CommandType";
         public static string UserID = "UserID";
+        public static string TargetUserID = "TargetUserID";
         public static string PassWord = "PassWord";
         public static string NickName = "NickName";
         public static string LoginResult = "LoginResult";

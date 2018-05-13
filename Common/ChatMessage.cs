@@ -18,28 +18,30 @@ namespace Client
         ToClient
     }
 
-    public class MessageD:Dictionary<string,string>
+    public class MessageDictionary:Dictionary<string,string>
     {
         public static char separator = StaticStuff.separator;
         public MessageDirection MessageStage=MessageDirection.ToServer;
 
-        public MessageD()
+        public MessageDictionary()
         {
 
         }
 
-        public MessageD(string messageString)
+        public MessageDictionary(string messageString)
         {
             string[] infos = messageString.Split(';');
             foreach (string s in infos)
             {
+                if (s.Length == 0)
+                    continue;
                 int indexOfColon = s.IndexOf(':');
                 if (indexOfColon <= 0) throw new Exception();
                 Add(s.Substring(0, indexOfColon), s.Substring(indexOfColon + 1));
             }
         }
 
-        public MessageD(string[] infos)
+        public MessageDictionary(string[] infos)
         {
             foreach (string s in infos)
             {
@@ -49,14 +51,14 @@ namespace Client
             }
         }
 
-        public static MessageD Parse(string messageString)
+        public static MessageDictionary Parse(string messageString)
         {
-            return new MessageD(messageString);
+            return new MessageDictionary(messageString);
         }
 
-        public static MessageD Parse(string[] infos)
+        public static MessageDictionary Parse(string[] infos)
         {
-            return new MessageD(infos);
+            return new MessageDictionary(infos);
         }
 
         public override string ToString()

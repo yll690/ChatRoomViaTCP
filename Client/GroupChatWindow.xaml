@@ -19,19 +19,19 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <Label Content="用户列表:" Margin="0,0,-0.5,0"/>
+            <Label Content="用户列表:"/>
             <ListView Name="userListLV" Grid.Row="1" MouseDoubleClick="userListLV_MouseDoubleClick">
                 <ListView.View>
                     <GridView>
                         <GridView.Columns>
-                            <GridViewColumn Header="ID" Width="45" DisplayMemberBinding="{Binding Path=UserID}"/>
+                            <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Path=UserID}"/>
                             <GridViewColumn Header="昵称" Width="90" DisplayMemberBinding="{Binding Path=NickName}"/>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="私聊" Click="MenuItem_Click"/>
+                        <MenuItem Name="PrivateChatMI" Header="私聊" Click="PrivateChatMI_Click"/>
                     </ContextMenu>
                 </ListView.ContextMenu>
             </ListView>
@@ -50,7 +50,6 @@
             <Border BorderBrush="Gray" BorderThickness="1">
                 <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto">
                     <StackPanel Name="messageListSP">
-
                     </StackPanel>
                 </ScrollViewer>
             </Border>

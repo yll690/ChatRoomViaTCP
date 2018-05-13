@@ -38,6 +38,7 @@ namespace Client
         ObservableCollection<User> userList = new ObservableCollection<User>();
         Properties.Settings settings = Properties.Settings.Default;
         SolidColorBrush labelCheckedBrush = new SolidColorBrush(Colors.LightGray);
+        List<PrivateChatWindow> privateChatWindowsList = new List<PrivateChatWindow>();
 
         public GroupChatWindow()
         {
@@ -100,7 +101,7 @@ namespace Client
             if (isItalic) style += 10;
             if (isUnderLine) style += 100;
 
-            MessageD message = new MessageD();
+            MessageDictionary message = new MessageDictionary();
             message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
             message.Add(MesKeyStr.UserID, user.UserID);
             message.Add(MesKeyStr.Content, contentTB.Text);
@@ -108,8 +109,7 @@ namespace Client
             message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
             message.Add(MesKeyStr.FontStyle, style.ToString());
             message.Add(MesKeyStr.FontColor, fontColor);
-
-            connector.SendMessage(message);
+            connector.SendGroupMessage(message);
             contentTB.Text = "";
         }
 
@@ -159,12 +159,14 @@ namespace Client
 
         private void userListLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
+            User targetUser = (User)userListLV.SelectedItem;
+            PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void PrivateChatMI_Click(object sender, RoutedEventArgs e)
         {
-
+            User targetUser = (User)userListLV.SelectedItem;
+            PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
         }
         #endregion
 
@@ -292,6 +294,15 @@ namespace Client
 
         //关于connector的事件处理方法
         #region
+
+        private void AddChildToMesListSP(UIElement element)
+        {
+            if (messageListSP.Children.Count == 500)
+                messageListSP.Children.RemoveAt(0);
+            messageListSP.Children.Add(element);
+            messageListSV.ScrollToEnd();
+        }
+
         private void Connector_ServerDisconnectEvent(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -304,15 +315,12 @@ namespace Client
             });
         }
 
-        private void Connector_GroupMessageEvent(object sender, MessageD e)
+        private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (messageListSP.Children.Count == 500)
-                    messageListSP.Children.RemoveAt(0);
                 MessageUC messageUC = new MessageUC(e);
-                messageListSP.Children.Add(messageUC);
-                messageListSV.ScrollToEnd();
+                AddChildToMesListSP(messageUC);
             });
         }
 
@@ -322,7 +330,12 @@ namespace Client
             {
                 userList.Add(e);
                 UpdateTitle();
-                //userListLV.Items.Add(e.ToString());
+
+                Label label = new Label();
+                label.Content = "用户 " + e.ToString() + " 加入群聊";
+                label.HorizontalAlignment = HorizontalAlignment.Center;
+                AddChildToMesListSP(label);
+
             });
         }
 
@@ -330,12 +343,16 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-
                 userList.Remove(e);
                 UpdateTitle();
-                //userListLV.Items.Remove(e.ToString());
+
+                Label label = new Label();
+                label.Content = "用户 " + e.ToString() + " 退出群聊";
+                label.HorizontalAlignment = HorizontalAlignment.Center;
+                AddChildToMesListSP(label);
             });
         }
         #endregion
+        
     }
 }

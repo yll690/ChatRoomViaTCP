@@ -20,9 +20,9 @@ namespace Client
     /// </summary>
     public partial class MessageUC : UserControl
     {
-        public MessageD ChatMessageP { get;private set; }
+        public MessageDictionary ChatMessageP { get;private set; }
 
-        public MessageUC(MessageD message, bool displayStyle)
+        public MessageUC(MessageDictionary message, bool displayStyle)
         {
             InitializeComponent();
             ChatMessageP = message;
@@ -37,7 +37,7 @@ namespace Client
             }
         }
 
-        public MessageUC(MessageD message)
+        public MessageUC(MessageDictionary message)
         {
             InitializeComponent();
             ChatMessageP = message;

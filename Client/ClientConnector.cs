@@ -25,8 +25,8 @@ namespace Client
         int bufferLength = 5 * 1024;
         Thread receiveThread;
 
-        public event EventHandler<MessageD> GroupMessageEvent;
-        public event EventHandler<MessageD> PrivateMessageEvent;
+        public event EventHandler<MessageDictionary> GroupMessageEvent;
+        public event EventHandler<MessageDictionary> PrivateMessageEvent;
         public event EventHandler<bool> LoginEvent;
         public event EventHandler<string> SignupResultEvent;
         public event EventHandler<User> UserJoinEvent;
@@ -74,20 +74,11 @@ namespace Client
             }
         }
 
-        private string[] RemoveCommand(string[] contents)
-        {
-            int length = contents.Length;
-            string[] infos = new string[length - 1];
-            for (int i = 1; i < length; i++)
-                infos[i - 1] = contents[i];
-            return infos;
-        }
-
         private void MessageSorter(byte[] buffer, int start, int length)
         {
             string content = Encoding.Default.GetString(buffer, start, length);
             ShowMessage("接收消息：" + content + "\n");
-            MessageD messageD = new MessageD(content);
+            MessageDictionary messageD = new MessageDictionary(content);
             CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD[MesKeyStr.CommandType]);
 
             switch (command)
@@ -208,7 +199,7 @@ namespace Client
 
         public bool Login(string userID, string password)
         {
-            MessageD messageD = new MessageD();
+            MessageDictionary messageD = new MessageDictionary();
             messageD.Add(MesKeyStr.CommandType, CommandType.Login.ToString());
             messageD.Add(MesKeyStr.UserID,userID);
             messageD.Add(MesKeyStr.PassWord,password);
@@ -228,7 +219,7 @@ namespace Client
         public void Logout()
         {
             User user = ((App)Application.Current).user;
-            MessageD messageD = new MessageD();
+            MessageDictionary messageD = new MessageDictionary();
             messageD.Add(MesKeyStr.CommandType, CommandType.Logout.ToString());
             messageD.Add(MesKeyStr.UserID, user.UserID);
             messageD.Add(MesKeyStr.NickName, user.NickName);
@@ -238,16 +229,22 @@ namespace Client
 
         public void SignUp(string nickName, string password)
         {
-            MessageD messageD = new MessageD();
+            MessageDictionary messageD = new MessageDictionary();
             messageD.Add(MesKeyStr.CommandType, CommandType.SignUp.ToString());
             messageD.Add(MesKeyStr.NickName, nickName);
             messageD.Add(MesKeyStr.PassWord, password);
             Send(messageD.ToString());
         }
 
-        public bool SendMessage(MessageD message)
+        public bool SendGroupMessage(MessageDictionary message)
         {
-            message.Add("CommandType", CommandType.GroupMessage.ToString());
+            message.Add(MesKeyStr.CommandType, CommandType.GroupMessage.ToString());
+            return Send(message.ToString(separator));
+        }
+
+        public bool SendPrivateMessage(MessageDictionary message)
+        {
+            message.Add(MesKeyStr.CommandType, CommandType.PrivateMessage.ToString());
             return Send(message.ToString(separator));
         }
 

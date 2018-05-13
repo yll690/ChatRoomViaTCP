@@ -21,8 +21,8 @@ namespace Server
 
         Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         
-        public event EventHandler<MessageD> GroupMessageEvent;
-        public event EventHandler<MessageD> PrivateMessageEvent;
+        public event EventHandler<MessageDictionary> GroupMessageEvent;
+        public event EventHandler<MessageDictionary> PrivateMessageEvent;
         public event EventHandler<LoginEventArgs> LoginEvent;
         public event EventHandler<SignUpEventArgs> SignUpEvent;
         public event EventHandler<User> LogoutEvent;
@@ -107,20 +107,11 @@ namespace Server
             ShowMessage("接收"+ receiveSocket.RemoteEndPoint.ToString()+ "的线程已结束\n");
         }
 
-        private string[] RemoveCommand(string[] contents)
-        {
-            int length = contents.Length;
-            string[] infos = new string[length - 1];
-            for (int i = 1; i < length; i++)
-                infos[i - 1] = contents[i];
-            return infos;
-        }
-
         private void MessageSorter(byte[] buffer, int start, int length, Socket clientSocket)
         {
             string content = Encoding.Default.GetString(buffer, 0, length);
             ShowMessage("从" + clientSocket.RemoteEndPoint.ToString() + "接收消息：" + content + "\n");
-            MessageD messageD = new MessageD(content);
+            MessageDictionary messageD = new MessageDictionary(content);
             CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD[MesKeyStr.CommandType]);
 
             switch (command)
@@ -169,8 +160,7 @@ namespace Server
 
             }
         }
-
-
+        
         public bool Send(Socket socket, byte[] message, int length)
         {
             try
@@ -193,7 +183,7 @@ namespace Server
             return Send(socket, bytes, bytes.Length);
         }
 
-        public bool SendMessage(Socket socket, MessageD chatMessage)
+        public bool SendMessage(Socket socket, MessageDictionary chatMessage)
         {
             if (Send(socket, chatMessage.ToString()))
                 return true;
@@ -208,7 +198,7 @@ namespace Server
         {
             try
             {
-                MessageD messageD = new MessageD();
+                MessageDictionary messageD = new MessageDictionary();
                 messageD.Add(MesKeyStr.CommandType, CommandType.LoginResult.ToString());
                 messageD.Add(MesKeyStr.LoginResult, result.ToString());
                 messageD.Add(MesKeyStr.UserID, userSocket.UserID);
@@ -245,8 +235,8 @@ namespace Server
                 return false;
             }
 
-            MessageD messageD = new MessageD();
-            messageD.Add(MesKeyStr.CommandType, CommandType.LoginResult.ToString());
+            MessageDictionary messageD = new MessageDictionary();
+            messageD.Add(MesKeyStr.CommandType, commandType.ToString());
             messageD.Add(MesKeyStr.UserID, newUser.UserID);
             messageD.Add(MesKeyStr.NickName, newUser.NickName);
             try
@@ -263,7 +253,7 @@ namespace Server
 
         public bool SendServerClosingMessage(Socket socket)
         {
-            MessageD messageD = new MessageD();
+            MessageDictionary messageD = new MessageDictionary();
             messageD.Add(MesKeyStr.CommandType, CommandType.ServerDisconnect.ToString());
             return Send(socket, messageD.ToString());
         }
