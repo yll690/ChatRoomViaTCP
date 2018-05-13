@@ -90,6 +90,7 @@ namespace Client
             if (isUnderLine) style += 100;
 
             MessageDictionary message = new MessageDictionary();
+            message.Add(MesKeyStr.TargetUserID, TargetUser.UserID);
             message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
             message.Add(MesKeyStr.UserID, user.UserID);
             message.Add(MesKeyStr.Content, contentTB.Text);
@@ -97,8 +98,13 @@ namespace Client
             message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
             message.Add(MesKeyStr.FontStyle, style.ToString());
             message.Add(MesKeyStr.FontColor, fontColor);
-            connector.SendGroupMessage(message);
+            connector.SendPrivateMessage(message);
             contentTB.Text = "";
+        }
+
+        private void sendB_Click(object sender, RoutedEventArgs e)
+        {
+            SendMessage();
         }
 
         private void contentTB_KeyDown(object sender, KeyEventArgs e)
@@ -108,19 +114,52 @@ namespace Client
         }
 
         #region
+        private void AddChildToMesListSP(UIElement element)
+        {
+            if (messageListSP.Children.Count == 500)
+                messageListSP.Children.RemoveAt(0);
+            messageListSP.Children.Add(element);
+            messageListSV.ScrollToEnd();
+        }
+
         private void Connector_UserQuitEvent(object sender, User e)
         {
-            throw new NotImplementedException();
+            if (e.UserID == TargetUser.UserID)
+            {
+                sendB.IsEnabled = false;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Label label = new Label();
+                    label.Content = "对方已下线";
+                    label.HorizontalAlignment = HorizontalAlignment.Center;
+                    AddChildToMesListSP(label);
+                });
+            }
         }
 
         private void Connector_UserJoinEvent(object sender, User e)
         {
-            throw new NotImplementedException();
+            if (e.UserID == TargetUser.UserID)
+            {
+                sendB.IsEnabled = true;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Label label = new Label();
+                    label.Content = "对方已上线";
+                    label.HorizontalAlignment = HorizontalAlignment.Center;
+                    AddChildToMesListSP(label);
+                });
+            }
         }
 
         private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
         {
-            throw new NotImplementedException();
+            
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MessageUC messageUC = new MessageUC(e);
+                AddChildToMesListSP(messageUC);
+            });
         }
         #endregion
 

@@ -126,17 +126,6 @@ namespace Server
             }
         }
 
-        //private void Connector_GroupMessageEvent(object sender, ChatMessageSend e)
-        //{
-        //    UserSocket user = GetUserSocket(e.UserID);
-        //    string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
-        //    ChatMessage chatMessage = new ChatMessage(e, user.NickName, ip, DateTime.Now.ToString());
-        //    MessageArrivedEvent?.Invoke(this, chatMessage);
-        //    foreach (UserSocket u in LoginedUserList)
-        //    {
-        //        connector.SendMessage(u.Socket, chatMessage);
-        //    }
-        //}
         private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
         {
             UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);

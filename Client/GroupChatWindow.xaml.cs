@@ -161,12 +161,14 @@ namespace Client
         {
             User targetUser = (User)userListLV.SelectedItem;
             PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
+            privateChatWindow.Show();
         }
 
         private void PrivateChatMI_Click(object sender, RoutedEventArgs e)
         {
             User targetUser = (User)userListLV.SelectedItem;
             PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
+            privateChatWindow.Show();
         }
         #endregion
 
