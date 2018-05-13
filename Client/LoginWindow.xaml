@@ -1,0 +1,30 @@
+﻿<Window x:Class="Client.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="登录" Height="150" Width="300" Closing="Window_Closing">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="214*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="24*"/>
+        </Grid.RowDefinitions>
+        
+        <Label Content="用户ID"/>
+        <TextBox Name="userIDTB" Grid.Column="1" Margin="3" Padding="2" VerticalContentAlignment="Center"/>
+        
+        <Label Content="密码" Grid.Row="1"/>
+        <PasswordBox Name="passwordPB" Grid.Column="1" Grid.Row="1" Margin="3" Padding="2" VerticalContentAlignment="Center" Password="10001"/>
+        
+        <Button Name="loginB" Content="登录" Grid.Row="2" Grid.ColumnSpan="2" Width="80" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Click="loginB_Click" IsDefault="True"/>
+        <Label Name="signUpL" Content="注册新用户" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonUp="signUpL_MouseLeftButtonUp" FontSize="10" Foreground="#FF7F7F7F"/>
+        <Label Name="loginSettingL" Content="登录设置" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center" MouseLeftButtonUp="loginSettingL_MouseLeftButtonUp" Cursor="Hand" FontSize="10" Foreground="#FF7F7F7F"/>
+    </Grid>
+</Window>
