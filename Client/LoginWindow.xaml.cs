@@ -52,7 +52,7 @@ namespace Client
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    GroupChatWindow groupChatWindow = GroupChatWindow.GetNewWindow();
+                    ChatWindow groupChatWindow = ChatWindow.GetNewWindow();
                     if (groupChatWindow != null)
                         groupChatWindow.Show();
                     settings.userID = userIDTB.Text;

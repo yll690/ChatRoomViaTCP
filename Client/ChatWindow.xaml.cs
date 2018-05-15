@@ -17,14 +17,25 @@ using System.Collections.ObjectModel;
 
 namespace Client
 {
+    public enum ChatMode
+    {
+        Group,
+        Private
+    }
+
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GroupChatWindow : Window
+    public partial class ChatWindow : Window
     {
         static int numOfWindow = 0;
         bool manualClose = true;
         bool initialized = false;
+
+        private ChatMode chatMode;
+        private User targetUser;
+        public ChatMode ChatModeP { get => chatMode; private set => chatMode = value; }
+        public User TargetUser { get => targetUser; private set => targetUser = value; }
 
         int fontSize = 12;
         bool isBold = false;
@@ -33,22 +44,52 @@ namespace Client
         string fontFamily = "Microsoft YaHei UI";
         string fontColor = "#FF000000";
 
-        ClientConnector connector = ((App)Application.Current).connector;
         public User user = ((App)Application.Current).user;
+        
+        ClientConnector connector = ((App)Application.Current).connector;
         ObservableCollection<User> userList = new ObservableCollection<User>();
         Properties.Settings settings = Properties.Settings.Default;
         SolidColorBrush labelCheckedBrush = new SolidColorBrush(Colors.LightGray);
         List<PrivateChatWindow> privateChatWindowsList = new List<PrivateChatWindow>();
+        
+        public ChatWindow()
+        {
+            Initialize(ChatMode.Group);
+        }
 
-        public GroupChatWindow()
+        public ChatWindow(User target)
+        {
+            TargetUser = target;
+            Initialize(ChatMode.Private);
+        }
+        
+        private void Initialize(ChatMode mode)
         {
             InitializeComponent();
-            connector.GroupMessageEvent += Connector_GroupMessageEvent;
-            connector.UserJoinEvent += Connector_UserJoinEvent;
-            connector.UserQuitEvent += Connector_UserQuitEvent;
             connector.ServerDisconnectEvent += Connector_ServerDisconnectEvent;
-            userListLV.ItemsSource = userList;
-            userList.Add(user);
+
+            ChatModeP = mode;
+            switch (mode)
+            {
+                case ChatMode.Group:
+                    {
+                        connector.GroupMessageEvent += Connector_GroupMessageEvent;
+                        connector.UserJoinEvent += Connector_UserJoinEvent;
+                        connector.UserQuitEvent += Connector_UserQuitEvent;
+                        userListLV.ItemsSource = userList;
+                        userList.Add(user);
+                        UpdateTitle();
+                        break;
+                    }
+                case ChatMode.Private:
+                    {
+                        connector.PrivateMessageEvent += Connector_PrivateMessageEvent;
+                        leftGrid.Visibility = Visibility.Collapsed;
+                        centerGS.Visibility = Visibility.Collapsed;
+                        break;
+                    }
+            }
+
             InstalledFontCollection installedFonts = new InstalledFontCollection();
             FontFamily defaultFont = FontFamily;
             for (int i = 0; i < installedFonts.Families.Length; i++)
@@ -57,9 +98,9 @@ namespace Client
                 if (defaultFont.ToString().Equals(installedFonts.Families[i].Name))
                     fontFamilyCB.SelectedIndex = i;
             }
-            initialized = true;
             LoadStyle();
-            UpdateTitle();
+            Title = TargetUser.ToString();
+            initialized = true;
         }
 
         private void LoadStyle()
@@ -113,12 +154,12 @@ namespace Client
             contentTB.Text = "";
         }
 
-        public static GroupChatWindow GetNewWindow()
+        public static ChatWindow GetNewWindow()
         {
             if (numOfWindow == 0)
             {
                 numOfWindow++;
-                return new GroupChatWindow();
+                return new ChatWindow();
             }
             else
                 return null;
@@ -318,6 +359,15 @@ namespace Client
         }
 
         private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MessageUC messageUC = new MessageUC(e);
+                AddChildToMesListSP(messageUC);
+            });
+        }
+
+        private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
