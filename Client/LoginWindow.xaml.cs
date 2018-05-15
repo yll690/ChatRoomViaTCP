@@ -79,12 +79,14 @@ namespace Client
             if (!(connector.connect() && connector.Login(userIDTB.Text, StaticStuff.GetMD5(passwordPB.Password))))
             {
                 MessageBox.Show(this, "登录失败，无法连接服务器！");
+                loginB.IsEnabled = true;
+                loginB.Content = "登录";
             }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (connector.isLogined == false)
+            if (connector.IsLogined == false)
                 connector.Close();
         }
 

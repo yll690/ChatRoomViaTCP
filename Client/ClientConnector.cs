@@ -13,17 +13,8 @@ namespace Client
 {
     public class ClientConnector
     {
-        public bool isLogined = false;
-        public bool isConnected = false;
-        
-        static char separator = StaticStuff.separator;
-        bool listening = true;
-        bool log = true;
-
-        Properties.Settings settings = Properties.Settings.Default;
-        Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        int bufferLength = 5 * 1024;
-        Thread receiveThread;
+        public bool IsLogined { get => isLogined; private set => isLogined = value; }
+        public bool IsConnected { get => isConnected; private set => isConnected = value; }
 
         public event EventHandler<MessageDictionary> GroupMessageEvent;
         public event EventHandler<MessageDictionary> PrivateMessageEvent;
@@ -34,12 +25,23 @@ namespace Client
         public event EventHandler ServerDisconnectEvent;
         public event EventHandler<string> LogEvent;
 
+        private static char separator = StaticStuff.separator;
+        private bool isLogined = false;
+        private bool isConnected = false;
+        private bool listening = true;
+        private bool log = true;
+
+        private Properties.Settings settings = Properties.Settings.Default;
+        private Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private int bufferLength = 5 * 1024;
+        private Thread receiveThread;
+
         public ClientConnector()
         {
             
         }
 
-        void ShowMessage(string s)
+        private void ShowMessage(string s)
         {
             if (log)
                 LogEvent?.Invoke(this, s);
@@ -88,13 +90,12 @@ namespace Client
                         if (messageD[MesKeyStr.LoginResult].Equals("True"))
                         {
                             ((App)Application.Current).CurrentUser = new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]);
-                            isLogined = true;
+                            IsLogined = true;
                             LoginEvent?.Invoke(this, true);
-                            //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
                         }
                         else
                         {
-                            isLogined = false;
+                            IsLogined = false;
                             LoginEvent?.Invoke(this, false);
                         }
                         break;
@@ -155,7 +156,7 @@ namespace Client
 
         public bool connect(IPEndPoint iPEndPoint)
         {
-            if (isConnected)
+            if (IsConnected)
                 return true;
             try
             {
@@ -251,8 +252,8 @@ namespace Client
         public void Close()
         {
             listening = false;
-            isLogined = false;
-            isConnected = false;
+            IsLogined = false;
+            IsConnected = false;
             if (clientSocket != null)
             {
                 if (clientSocket.Connected)
@@ -265,6 +266,5 @@ namespace Client
             //if (receiveThread != null && receiveThread.IsAlive)
             //   receiveThread.Abort();
         }
-
     }
 }

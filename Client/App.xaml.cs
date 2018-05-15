@@ -15,9 +15,13 @@ namespace Client
     {
         public User CurrentUser;
         public ClientConnector connector;
+        public MessageManager manager;
 
+        //构造ClientConnector和MessageManager的实例，并创建登录窗口
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            connector = new ClientConnector();
+            manager = new MessageManager();
             LoginWindow loginWindow = new LoginWindow();
             loginWindow.Show();
         }

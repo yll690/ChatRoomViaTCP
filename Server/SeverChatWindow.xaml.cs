@@ -20,14 +20,15 @@ namespace Server
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    public partial class GroupChatWindow : Window
+    public partial class SeverChatWindow : Window
     {
-        ServerConnector connector = ((App)Application.Current).connector;
-        AccountManager manager = ((App)Application.Current).accountManager;
-        ObservableCollection<User> userList = new ObservableCollection<User>();
-        bool displayStyle = false;
+        private bool displayStyle = false;
 
-        public GroupChatWindow()
+        private ServerConnector connector = ((App)Application.Current).connector;
+        private AccountManager manager = ((App)Application.Current).accountManager;
+        private ObservableCollection<User> userList = new ObservableCollection<User>();
+
+        public SeverChatWindow()
         {
             InitializeComponent();
             userListLV.ItemsSource = userList;
@@ -103,7 +104,10 @@ namespace Server
             {
                 if (messageListSP.Children.Count == 500)
                     messageListSP.Children.RemoveAt(0);
-
+                if ((CommandType)Enum.Parse(typeof(CommandType), e[MesKeyStr.CommandType]) == CommandType.GroupMessage)
+                    e.Add(MesKeyStr.Remark, "群聊消息");
+                else
+                    e.Add(MesKeyStr.Remark, "私聊消息，目标："+e[MesKeyStr.UserID]);
                 MessageUC messageUC = new MessageUC(e, displayStyle);
                 messageListSP.Children.Add(messageUC);
                 messageListSV.ScrollToEnd();

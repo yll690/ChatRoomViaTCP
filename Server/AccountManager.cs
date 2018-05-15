@@ -12,16 +12,16 @@ namespace Server
 {
     public class AccountManager
     {
-        string defaultAccountPath = "Accounts.dat";
-        List<Account> AccountList = new List<Account>();
-        List<UserSocket> LoginedUserList = new List<UserSocket>();
-        ServerConnector connector = ((App)Application.Current).connector;
-        bool log = true;
-
         public event EventHandler<User> UserJoinEvent;
         public event EventHandler<User> UserQuitEvent;
         public event EventHandler<MessageDictionary> MessageArrivedEvent;
         public event EventHandler<string> LogEvent;
+
+        string defaultAccountPath = "Accounts.dat";
+        private bool log = true;
+        private List<Account> AccountList = new List<Account>();
+        private List<UserSocket> LoginedUserList = new List<UserSocket>();
+        private ServerConnector connector = ((App)Application.Current).connector;
 
         public AccountManager()
         {
@@ -35,8 +35,8 @@ namespace Server
             connector.ServerClosingEvent += Connector_ServerClosingEvent;
             log = connector.log;
         }
-        
-        void ShowMessage(string s)
+
+        private void ShowMessage(string s)
         {
             if (log)
                 LogEvent?.Invoke(this, s);
@@ -44,7 +44,7 @@ namespace Server
                 MessageBox.Show(s);
         }
 
-        void LoadAccount()
+        private void LoadAccount()
         {
             string[] lines;
             if (File.Exists(defaultAccountPath))
@@ -137,12 +137,15 @@ namespace Server
             e.Add(MesKeyStr.IP, ip);
             e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
             MessageArrivedEvent?.Invoke(this, e);
+            e.Add(MesKeyStr.Sender, Sender.others.ToString());
             foreach (UserSocket u in LoginedUserList)
             {
-                //if (u.UserID.Equals(e[MesKeyStr.UserID]))
-                //    continue;
+                if (u.UserID.Equals(e[MesKeyStr.UserID]))
+                    continue;
                 connector.SendMessage(u.Socket, e);
             }
+            e[MesKeyStr.Sender] = Sender.self.ToString();
+            connector.SendMessage(user.Socket, e);
         }
 
         private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
@@ -157,7 +160,9 @@ namespace Server
                     e.Add(MesKeyStr.IP, ip);
                     e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
                     MessageArrivedEvent?.Invoke(this, e);
+                    e.Add(MesKeyStr.Sender, Sender.others.ToString());
                     connector.SendMessage(LoginedUserList[i].Socket, e);
+                    e[MesKeyStr.Sender] = Sender.self.ToString();
                     connector.SendMessage(user.Socket, e);
                 }
             }

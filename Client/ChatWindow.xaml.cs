@@ -17,21 +17,16 @@ using System.Collections.ObjectModel;
 
 namespace Client
 {
-
-
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class ChatWindow : Window
     {
-        bool manualClose = true;
-        bool initialized = false;
-
-        private ChatMode chatMode;
-        private User targetUser;
         public ChatMode ChatModeP { get => chatMode; private set => chatMode = value; }
         public User TargetUser { get => targetUser; private set => targetUser = value; }
-
+        public User CurrentUser { get => currentUser; private set => currentUser = value; }
+        public event EventHandler<User> PrivateChatEvent;
+        
         int fontSize = 12;
         bool isBold = false;
         bool isItalic = false;
@@ -39,8 +34,12 @@ namespace Client
         string fontFamily = "Microsoft YaHei UI";
         string fontColor = "#FF000000";
 
-        public User user = ((App)Application.Current).CurrentUser;
-        
+        private ChatMode chatMode;
+        private User targetUser;
+        private User currentUser = ((App)Application.Current).CurrentUser;
+        bool manualClose = true;
+        bool initialized = false;
+
         ClientConnector connector = ((App)Application.Current).connector;
         ObservableCollection<User> userList = new ObservableCollection<User>();
         Properties.Settings settings = Properties.Settings.Default;
@@ -60,24 +59,19 @@ namespace Client
         private void Initialize(ChatMode mode)
         {
             InitializeComponent();
-            connector.ServerDisconnectEvent += Connector_ServerDisconnectEvent;
 
             ChatModeP = mode;
             switch (mode)
             {
                 case ChatMode.Group:
                     {
-                        connector.GroupMessageEvent += Connector_GroupMessageEvent;
-                        connector.UserJoinEvent += Connector_UserJoinEvent;
-                        connector.UserQuitEvent += Connector_UserQuitEvent;
                         userListLV.ItemsSource = userList;
-                        userList.Add(user);
+                        userList.Add(currentUser);
                         UpdateTitle();
                         break;
                     }
                 case ChatMode.Private:
                     {
-                        connector.PrivateMessageEvent += Connector_PrivateMessageEvent;
                         leftGrid.Visibility = Visibility.Collapsed;
                         centerGS.Visibility = Visibility.Collapsed;
                         Title = TargetUser.ToString();
@@ -115,7 +109,7 @@ namespace Client
 
         private void UpdateTitle()
         {
-            Title = "群聊室 （目前在线 " + userList.Count + " 人），目前登录：" + user.ToString();
+            Title = "群聊室 （目前在线 " + userList.Count + " 人），目前登录：" + currentUser.ToString();
         }
 
         private void SaveSettings()
@@ -138,7 +132,7 @@ namespace Client
 
             MessageDictionary message = new MessageDictionary();
             message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
-            message.Add(MesKeyStr.UserID, user.UserID);
+            message.Add(MesKeyStr.UserID, currentUser.UserID);
             message.Add(MesKeyStr.Content, contentTB.Text);
             message.Add(MesKeyStr.FontFamily, (string)fontFamilyCB.SelectedItem);
             message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
@@ -157,7 +151,7 @@ namespace Client
             contentTB.Text = "";
         }
 
-        //关于其他窗口事件的事件处理方法
+        //关于窗口事件的事件处理方法
         #region
         private void sendB_Click(object sender, RoutedEventArgs e)
         {
@@ -191,16 +185,14 @@ namespace Client
 
         private void userListLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            User target = (User)userListLV.SelectedItem;
-            ChatWindow chatWindow = new ChatWindow(target);
-            chatWindow.Show();
+            foreach(object user in userListLV.SelectedItems)
+                PrivateChatEvent?.Invoke(this, (User)user);
         }
 
         private void PrivateChatMI_Click(object sender, RoutedEventArgs e)
         {
-            User target = (User)userListLV.SelectedItem;
-            ChatWindow chatWindow = new ChatWindow(target);
-            chatWindow.Show();
+            foreach (object user in userListLV.SelectedItems)
+                PrivateChatEvent?.Invoke(this, (User)user);
         }
         #endregion
 
@@ -326,9 +318,8 @@ namespace Client
         }
         #endregion
 
-        //关于connector的事件处理方法
+        //关于消息处理的方法
         #region
-
         private void AddChildToMesListSP(UIElement element)
         {
             if (messageListSP.Children.Count == 500)
@@ -337,87 +328,44 @@ namespace Client
             messageListSV.ScrollToEnd();
         }
 
-        private void Connector_ServerDisconnectEvent(object sender, EventArgs e)
+        public void MessageArrive(MessageDictionary e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (chatMode == ChatMode.Group)
-                {
-                    MessageBox.Show(this, "服务器关闭或失去连接，请重新登录。");
-                    LoginWindow loginWindow = new LoginWindow();
-                    loginWindow.Show();
-                    manualClose = false;
-                }
+            MessageUC messageUC;
+            if ((Sender)Enum.Parse(typeof(Sender), e[MesKeyStr.Sender]) == Sender.self)
+                messageUC = new MessageUC(e, Sender.self);
+            else
+                messageUC = new MessageUC(e);
+            AddChildToMesListSP(messageUC);
+        }
+
+        public void UserJoin(User e)
+        {
+            userList.Add(e);
+            UpdateTitle();
+
+            Label label = new Label();
+            label.Content = "用户 " + e.ToString() + " 加入群聊";
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            AddChildToMesListSP(label);
+        }
+
+        public void UserQuit(User e)
+        {
+            userList.Remove(e);
+            UpdateTitle();
+
+            Label label = new Label();
+            label.Content = "用户 " + e.ToString() + " 退出群聊";
+            label.HorizontalAlignment = HorizontalAlignment.Center;
+            AddChildToMesListSP(label);
+        }
+
+        public void TargetQuit(User u)
+        {
+            if (MessageBox.Show(u.ToString() + "已离线，是否关闭本窗口？", "提示", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 Close();
-            });
-        }
-
-        private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Sender s;
-                if (user.UserID.Equals(e[MesKeyStr.UserID]))
-                    s = Sender.self;
-                else
-                    s = Sender.others;
-                MessageUC messageUC = new MessageUC(e, s);
-                AddChildToMesListSP(messageUC);
-            });
-        }
-
-        private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Sender s;
-                if (user.UserID.Equals(e[MesKeyStr.UserID]))
-                    s = Sender.self;
-                else
-                    s = Sender.others;
-                MessageUC messageUC = new MessageUC(e, s);
-                AddChildToMesListSP(messageUC);
-            });
-        }
-
-        private void Connector_UserJoinEvent(object sender, User e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                userList.Add(e);
-                UpdateTitle();
-
-                Label label = new Label();
-                label.Content = "用户 " + e.ToString() + " 加入群聊";
-                label.HorizontalAlignment = HorizontalAlignment.Center;
-                AddChildToMesListSP(label);
-
-            });
-        }
-
-        private void Connector_UserQuitEvent(object sender, User e)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                userList.Remove(e);
-                UpdateTitle();
-
-                Label label = new Label();
-                label.Content = "用户 " + e.ToString() + " 退出群聊";
-                label.HorizontalAlignment = HorizontalAlignment.Center;
-                AddChildToMesListSP(label);
-            });
-        }
-
-        private void Connector_TargetQuitEvent(object sender, User e)
-        {
-            if(e.Equals(TargetUser))
-            {
-                if (MessageBox.Show("对方已离线，是否关闭本窗口？", "提示", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                    Close();
-                else
-                    sendB.IsEnabled = false;
-            }
+            else
+                sendB.IsEnabled = false;
             return;
         }
         #endregion

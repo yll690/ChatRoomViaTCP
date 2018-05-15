@@ -20,7 +20,7 @@ namespace Server
         {
             connector = new ServerConnector();
             accountManager = new AccountManager();
-            GroupChatWindow window = new GroupChatWindow();
+            SeverChatWindow window = new SeverChatWindow();
             window.Show();
         }
     }

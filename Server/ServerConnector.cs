@@ -13,14 +13,8 @@ namespace Server
 {
     public class ServerConnector
     {
-        int defaultPort = 10000;
-        int bufferLength = 5 * 1024 * 1024;
-        static char separator = StaticStuff.separator;
-        bool listening = true;
         public bool log = true;
 
-        Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        
         public event EventHandler<MessageDictionary> GroupMessageEvent;
         public event EventHandler<MessageDictionary> PrivateMessageEvent;
         public event EventHandler<LoginEventArgs> LoginEvent;
@@ -30,7 +24,12 @@ namespace Server
         public event EventHandler<Socket> DisconnectEvent;
         public event EventHandler ServerClosingEvent;
 
-
+        private int defaultPort = 10000;
+        private int bufferLength = 5 * 1024 * 1024;
+        private bool listening = true;
+        private static char separator = StaticStuff.separator;
+        private Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        
         public ServerConnector()
         {
             //IPAddress ip = IPAddress.Parse(defaultIP);
@@ -41,7 +40,7 @@ namespace Server
             listenThread.Start();
         }
 
-        void ShowMessage(string s)
+        private void ShowMessage(string s)
         {
             if (log)
                 LogEvent?.Invoke(this, s);

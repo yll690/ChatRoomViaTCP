@@ -53,20 +53,23 @@ namespace Client
             {
                 contentB.Margin = new Thickness(50, 2, 5, 5);
                 contentB.Background = new SolidColorBrush(Color.FromRgb(120,205,248));
+                contentB.HorizontalAlignment = HorizontalAlignment.Right;
                 infoG.Visibility = Visibility.Collapsed;
             }
         }
 
-        void DisplayWithNoStyle()
+        private void DisplayWithNoStyle()
         {
             contentTB.ToolTip = ChatMessageP[MesKeyStr.Content];
             contentTB.Text = ChatMessageP[MesKeyStr.Content];
             nickNameL.Content = ChatMessageP[MesKeyStr.NickName] + "(" + ChatMessageP[MesKeyStr.UserID] + ")";
             ipAdressL.Content = ChatMessageP[MesKeyStr.IP];
             timeL.Content = ChatMessageP[MesKeyStr.DateTime];
+            if (ChatMessageP.ContainsKey(MesKeyStr.Remark))
+                remarkL.Content = ChatMessageP[MesKeyStr.Remark];
         }
 
-        void Display()
+        private void Display()
         {
             DisplayWithNoStyle();
             FontFamilyConverter fontFamilyConverter = new FontFamilyConverter();

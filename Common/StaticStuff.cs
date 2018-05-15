@@ -75,5 +75,7 @@ namespace Client
         public static string FontSize = "FontSize";
         public static string FontFamily = "FontFamily";
         public static string FontColor = "FontColor";
+        public static string Sender = "Sender";
+        public static string Remark = "Remark";
     }
 }

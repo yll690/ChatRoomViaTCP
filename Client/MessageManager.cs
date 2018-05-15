@@ -11,7 +11,9 @@ namespace Client
     {
         ClientConnector connector = ((App)Application.Current).connector;
         ChatWindow GroupChatWindow;
-        
+        List<ChatWindow> privateWindows = new List<ChatWindow>();
+        User currentUser;
+
         public MessageManager()
         {
             connector.GroupMessageEvent += Connector_GroupMessageEvent;
@@ -23,32 +25,105 @@ namespace Client
 
         public void StartChatting()
         {
-
+            currentUser = ((App)Application.Current).CurrentUser;
+            GroupChatWindow = new ChatWindow();
+            GroupChatWindow.PrivateChatEvent += GroupChatWindow_PrivateChatEvent;
+            GroupChatWindow.Closed += GroupChatWindow_Closed;
+            GroupChatWindow.Show();
         }
 
+        private void GroupChatWindow_PrivateChatEvent(object sender, User e)
+        {
+            ChatWindow privateChatWindow = new ChatWindow(e);
+            privateChatWindow.Closed += PrivateWindow_Closed;
+            privateWindows.Add(privateChatWindow);
+            privateChatWindow.Show();
+        }
+
+        private void GroupChatWindow_Closed(object sender, EventArgs e)
+        {
+            foreach (ChatWindow cw in privateWindows)
+                cw.Close();
+        }
+        
+        private void PrivateWindow_Closed(object sender, EventArgs e)
+        {
+            ChatWindow chatWindow = (ChatWindow)sender;
+            privateWindows.Remove(chatWindow);
+        }
+
+        //关于connector的事件处理方法
+        #region
         private void Connector_UserQuitEvent(object sender, User e)
         {
-            throw new NotImplementedException();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                GroupChatWindow.UserQuit(e);
+            });
+            foreach (ChatWindow cw in privateWindows)
+                if (cw.TargetUser.UserID.Equals(e.UserID))
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        cw.TargetQuit(e);
+                    });
         }
 
         private void Connector_UserJoinEvent(object sender, User e)
         {
-            throw new NotImplementedException();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                GroupChatWindow.UserJoin(e);
+            });
         }
 
         private void Connector_ServerDisconnectEvent(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            MessageBox.Show("服务器关闭或失去连接，请重新登录。");
+            GroupChatWindow.Close();
+            foreach (ChatWindow cw in privateWindows)
+                cw.Close();
+            LoginWindow loginWindow = new LoginWindow();
+            loginWindow.Show();
         }
 
         private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
         {
-            throw new NotImplementedException();
+            bool found = false;
+            Sender s = (Sender)Enum.Parse(typeof(Sender), e[MesKeyStr.Sender]);
+            string targetUserID = s == Sender.others ? e[MesKeyStr.UserID] : e[MesKeyStr.TargetUserID];
+            foreach (ChatWindow cw in privateWindows)
+            {
+
+                if (cw.TargetUser.UserID.Equals(targetUserID))
+                {
+                    found = true;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        cw.MessageArrive(e);
+                    });
+                }
+            }
+            if (found == false)
+            {
+                User target = new User(e[MesKeyStr.UserID], e[MesKeyStr.NickName]);
+                ChatWindow chatWindow = null;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    chatWindow = new ChatWindow(target);
+                    chatWindow.Closed += PrivateWindow_Closed;
+                    chatWindow.Show();
+                });
+                privateWindows.Add(chatWindow);
+            }
         }
 
         private void Connector_GroupMessageEvent(object sender, MessageDictionary e)
         {
-            throw new NotImplementedException();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                GroupChatWindow.MessageArrive(e);
+            });
         }
+        #endregion
     }
 }

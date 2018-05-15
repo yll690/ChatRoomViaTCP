@@ -9,11 +9,11 @@
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" MinWidth="70"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Grid Name="leftGrid" Margin="0,0,5,0">
+        <Grid Name="leftGrid" Margin="0,0,5,0" Width="150" MinWidth="70">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>

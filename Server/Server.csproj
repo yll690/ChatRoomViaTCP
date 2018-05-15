@@ -58,7 +58,7 @@
     <Compile Include="LoginEventArgs.cs" />
     <Compile Include="ServerConnector.cs" />
     <Compile Include="SignUpEventArgs.cs" />
-    <Page Include="GroupChatWindow.xaml">
+    <Page Include="SeverChatWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -66,8 +66,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GroupChatWindow.xaml.cs">
-      <DependentUpon>GroupChatWindow.xaml</DependentUpon>
+    <Compile Include="SeverChatWindow.xaml.cs">
+      <DependentUpon>SeverChatWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
