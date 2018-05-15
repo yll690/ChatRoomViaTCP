@@ -19,9 +19,9 @@ namespace Client
     /// </summary>
     public partial class LoginWindow : Window
     {
-        ClientConnector connector;
+        ClientConnector connector=((App)Application.Current).connector;
+        MessageManager manager = ((App)Application.Current).manager;
         Properties.Settings settings = Properties.Settings.Default;
-        App app = (App)Application.Current;
 
         bool dislayLogWindow = true;
 
@@ -30,8 +30,6 @@ namespace Client
             InitializeComponent();
             if (settings.userID.Length > 0)
                 userIDTB.Text = settings.userID;
-            connector = new ClientConnector();
-            app.connector = connector;
             connector.LoginEvent += LoginState;
             connector.SignupResultEvent += Connector_SignupResultEvent;
             if (dislayLogWindow)
@@ -52,9 +50,7 @@ namespace Client
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    ChatWindow groupChatWindow = ChatWindow.GetNewWindow();
-                    if (groupChatWindow != null)
-                        groupChatWindow.Show();
+                    manager.StartChatting();
                     settings.userID = userIDTB.Text;
                     settings.Save();
                     Close();

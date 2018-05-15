@@ -44,6 +44,19 @@ namespace Client
             Display();
         }
 
+        public MessageUC(MessageDictionary message, Sender sender)
+        {
+            InitializeComponent();
+            ChatMessageP = message;
+            Display();
+            if(sender==Sender.self)
+            {
+                contentB.Margin = new Thickness(50, 2, 5, 5);
+                contentB.Background = new SolidColorBrush(Color.FromRgb(120,205,248));
+                infoG.Visibility = Visibility.Collapsed;
+            }
+        }
+
         void DisplayWithNoStyle()
         {
             contentTB.ToolTip = ChatMessageP[MesKeyStr.Content];

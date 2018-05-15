@@ -17,18 +17,13 @@ using System.Collections.ObjectModel;
 
 namespace Client
 {
-    public enum ChatMode
-    {
-        Group,
-        Private
-    }
+
 
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class ChatWindow : Window
     {
-        static int numOfWindow = 0;
         bool manualClose = true;
         bool initialized = false;
 
@@ -44,13 +39,12 @@ namespace Client
         string fontFamily = "Microsoft YaHei UI";
         string fontColor = "#FF000000";
 
-        public User user = ((App)Application.Current).user;
+        public User user = ((App)Application.Current).CurrentUser;
         
         ClientConnector connector = ((App)Application.Current).connector;
         ObservableCollection<User> userList = new ObservableCollection<User>();
         Properties.Settings settings = Properties.Settings.Default;
         SolidColorBrush labelCheckedBrush = new SolidColorBrush(Colors.LightGray);
-        List<PrivateChatWindow> privateChatWindowsList = new List<PrivateChatWindow>();
         
         public ChatWindow()
         {
@@ -86,6 +80,7 @@ namespace Client
                         connector.PrivateMessageEvent += Connector_PrivateMessageEvent;
                         leftGrid.Visibility = Visibility.Collapsed;
                         centerGS.Visibility = Visibility.Collapsed;
+                        Title = TargetUser.ToString();
                         break;
                     }
             }
@@ -99,7 +94,6 @@ namespace Client
                     fontFamilyCB.SelectedIndex = i;
             }
             LoadStyle();
-            Title = TargetUser.ToString();
             initialized = true;
         }
 
@@ -150,19 +144,17 @@ namespace Client
             message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
             message.Add(MesKeyStr.FontStyle, style.ToString());
             message.Add(MesKeyStr.FontColor, fontColor);
-            connector.SendGroupMessage(message);
-            contentTB.Text = "";
-        }
 
-        public static ChatWindow GetNewWindow()
-        {
-            if (numOfWindow == 0)
-            {
-                numOfWindow++;
-                return new ChatWindow();
-            }
+            if(chatMode==ChatMode.Group)
+                connector.SendGroupMessage(message);
             else
-                return null;
+            {
+                message.Add(MesKeyStr.TargetUserID, TargetUser.UserID);
+                connector.SendPrivateMessage(message);
+            }
+            //MessageUC messageUC = new MessageUC(message, Sender.self);
+            //AddChildToMesListSP(messageUC);
+            contentTB.Text = "";
         }
 
         //关于其他窗口事件的事件处理方法
@@ -175,9 +167,8 @@ namespace Client
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //MessageBox.Show(this,"想要退出还是注销？",MessageBoxButton.YesNoCancel)
-            numOfWindow--;
             SaveSettings();
-            if (manualClose)
+            if (manualClose && chatMode == ChatMode.Group)
             {
                 connector.Close();
             }
@@ -200,16 +191,16 @@ namespace Client
 
         private void userListLV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            User targetUser = (User)userListLV.SelectedItem;
-            PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
-            privateChatWindow.Show();
+            User target = (User)userListLV.SelectedItem;
+            ChatWindow chatWindow = new ChatWindow(target);
+            chatWindow.Show();
         }
 
         private void PrivateChatMI_Click(object sender, RoutedEventArgs e)
         {
-            User targetUser = (User)userListLV.SelectedItem;
-            PrivateChatWindow privateChatWindow = new PrivateChatWindow(targetUser);
-            privateChatWindow.Show();
+            User target = (User)userListLV.SelectedItem;
+            ChatWindow chatWindow = new ChatWindow(target);
+            chatWindow.Show();
         }
         #endregion
 
@@ -350,10 +341,13 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MessageBox.Show(this, "服务器关闭或失去连接，请重新登录。");
-                LoginWindow loginWindow = new LoginWindow();
-                loginWindow.Show();
-                manualClose = false;
+                if (chatMode == ChatMode.Group)
+                {
+                    MessageBox.Show(this, "服务器关闭或失去连接，请重新登录。");
+                    LoginWindow loginWindow = new LoginWindow();
+                    loginWindow.Show();
+                    manualClose = false;
+                }
                 Close();
             });
         }
@@ -362,7 +356,12 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MessageUC messageUC = new MessageUC(e);
+                Sender s;
+                if (user.UserID.Equals(e[MesKeyStr.UserID]))
+                    s = Sender.self;
+                else
+                    s = Sender.others;
+                MessageUC messageUC = new MessageUC(e, s);
                 AddChildToMesListSP(messageUC);
             });
         }
@@ -371,7 +370,12 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                MessageUC messageUC = new MessageUC(e);
+                Sender s;
+                if (user.UserID.Equals(e[MesKeyStr.UserID]))
+                    s = Sender.self;
+                else
+                    s = Sender.others;
+                MessageUC messageUC = new MessageUC(e, s);
                 AddChildToMesListSP(messageUC);
             });
         }
@@ -404,7 +408,19 @@ namespace Client
                 AddChildToMesListSP(label);
             });
         }
+
+        private void Connector_TargetQuitEvent(object sender, User e)
+        {
+            if(e.Equals(TargetUser))
+            {
+                if (MessageBox.Show("对方已离线，是否关闭本窗口？", "提示", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    Close();
+                else
+                    sendB.IsEnabled = false;
+            }
+            return;
+        }
         #endregion
-        
+
     }
 }

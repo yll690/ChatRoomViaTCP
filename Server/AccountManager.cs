@@ -139,6 +139,8 @@ namespace Server
             MessageArrivedEvent?.Invoke(this, e);
             foreach (UserSocket u in LoginedUserList)
             {
+                //if (u.UserID.Equals(e[MesKeyStr.UserID]))
+                //    continue;
                 connector.SendMessage(u.Socket, e);
             }
         }
@@ -147,7 +149,7 @@ namespace Server
         {
             for (int i = 0; i < LoginedUserList.Count; i++)
             {
-                if (LoginedUserList[i].UserID == e[MesKeyStr.TargetUserID])
+                if (LoginedUserList[i].UserID.Equals(e[MesKeyStr.TargetUserID]))
                 {
                     UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);
                     string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
@@ -156,6 +158,7 @@ namespace Server
                     e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
                     MessageArrivedEvent?.Invoke(this, e);
                     connector.SendMessage(LoginedUserList[i].Socket, e);
+                    connector.SendMessage(user.Socket, e);
                 }
             }
         }

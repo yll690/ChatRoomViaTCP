@@ -13,7 +13,7 @@ namespace Client
     /// </summary>
     public partial class App : Application
     {
-        public User user;
+        public User CurrentUser;
         public ClientConnector connector;
 
         private void Application_Startup(object sender, StartupEventArgs e)

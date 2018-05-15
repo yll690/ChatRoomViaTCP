@@ -7,6 +7,18 @@ using System.Windows;
 
 namespace Client
 {
+    public enum Sender
+    {
+        self,
+        others
+    }
+
+    public enum ChatMode
+    {
+        Group,
+        Private
+    }
+
     public enum MessageType
     {
         Text='T',

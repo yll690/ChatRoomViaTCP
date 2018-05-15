@@ -87,7 +87,7 @@ namespace Client
                     {
                         if (messageD[MesKeyStr.LoginResult].Equals("True"))
                         {
-                            ((App)Application.Current).user = new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]);
+                            ((App)Application.Current).CurrentUser = new User(messageD[MesKeyStr.UserID], messageD[MesKeyStr.NickName]);
                             isLogined = true;
                             LoginEvent?.Invoke(this, true);
                             //UserJoinEvent?.Invoke(this, ((App)Application.Current).user);
@@ -218,7 +218,7 @@ namespace Client
 
         public void Logout()
         {
-            User user = ((App)Application.Current).user;
+            User user = ((App)Application.Current).CurrentUser;
             MessageDictionary messageD = new MessageDictionary();
             messageD.Add(MesKeyStr.CommandType, CommandType.Logout.ToString());
             messageD.Add(MesKeyStr.UserID, user.UserID);
