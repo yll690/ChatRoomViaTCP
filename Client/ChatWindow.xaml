@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="群聊室" Height="500" MinHeight="200" Width="600" MinWidth="420">
+        Title="群聊室" Height="600" MinHeight="250" Width="800" MinWidth="480">
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -47,7 +47,7 @@
                 <RowDefinition Height="100" MinHeight="50"/>
             </Grid.RowDefinitions>
             <Border BorderBrush="Gray" BorderThickness="1">
-                <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
+                <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom" Focusable="False">
                     <StackPanel Name="messageListSP">
                     </StackPanel>
                 </ScrollViewer>
@@ -83,6 +83,7 @@
                     <Label Content="I" Name="italicL" MouseLeftButtonUp="italicL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0"/>
                     <Label Content="U" Name="underLineL" MouseLeftButtonUp="underLineL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0"/>
                     <Label Content="A" Name="fontColorL" MouseLeftButtonUp="fontColorL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" FontWeight="Bold" Background="{x:Null}" Margin="2,0,0,0"/>
+                    <Image Source="picture.png" MouseLeftButtonUp="Image_MouseLeftButtonUp" Width="18" Cursor="Hand" Margin="5,0,0,0"/>
                 </StackPanel>
                 <Grid Grid.Row="1" Grid.RowSpan="2">
                     <Grid.ColumnDefinitions>
@@ -90,8 +91,8 @@
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="50"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Name="contentTB" Text="要发送的消息" TextWrapping="Wrap" Padding="5" AcceptsReturn="True" KeyDown="contentTB_KeyDown"/>
-                    <Button Name="sendB" Content="发送消息" Grid.Column="2" Click="sendB_Click"/>
+                    <TextBox Name="contentTB" TextWrapping="Wrap" Padding="5" AcceptsReturn="True" KeyDown="contentTB_KeyDown"/>
+                    <Button Name="sendB" Content="发送" Grid.Column="2" Click="sendB_Click"/>
                 </Grid>
             </Grid>
         </Grid>

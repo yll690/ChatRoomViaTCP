@@ -79,14 +79,27 @@ namespace Server
         }
         #endregion
 
+        private void Log(string log)
+        {
+            int index = log.IndexOf(StaticStuff.Separator + MesKeyStr.Base64String + ":");
+            if (index >= 0)
+            {
+                int index2 = log.IndexOf(StaticStuff.Separator, index + 1);
+                string newLog = log.Substring(0, index) + "[图片]" + log.Substring(index2);
+                logTB.Text += newLog + "\n";
+            }
+            else
+                logTB.Text += log + "\n";
+            logTB.ScrollToEnd();
+        }
+
         //关于manager和connector的事件处理方法
         #region
         private void Connector_LogEvent(object sender, string e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                logTB.Text += e + "\n";
-                logTB.ScrollToEnd();
+                Log(e);
             });
         }
 
@@ -94,8 +107,7 @@ namespace Server
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                logTB.Text += e + "\n";
-                logTB.ScrollToEnd();
+                Log(e);
             });
         }
 

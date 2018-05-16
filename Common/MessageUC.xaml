@@ -24,7 +24,10 @@
             <Label Name="remarkL" Grid.Column="3" Padding="2" Margin="5,0"/>
         </Grid>
         <Border Name="contentB" Grid.Row="1" CornerRadius="10" Grid.ColumnSpan="3" Background="#FFCDD7E2" Margin="5,2,50,5" HorizontalAlignment="Left" >
-            <TextBox Name="contentTB" Text="聊天内容" Margin="8,5" Padding="2" TextWrapping="Wrap" IsUndoEnabled="False" IsReadOnly="True" BorderThickness="0" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Grid Name="contentG">
+                <TextBox Name="contentTB" Text="" Margin="8,5" Padding="2" TextWrapping="Wrap" IsUndoEnabled="False" IsReadOnly="True" BorderThickness="0" Background="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <ContentControl Name="imageCC" Margin="8" MouseDoubleClick="imageCC_MouseDoubleClick" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

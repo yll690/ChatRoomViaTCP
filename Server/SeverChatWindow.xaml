@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
-        Title="目前在线：0人" Height="600" MinHeight="150" Width="800" MinWidth="400" Closing="Window_Closing">
+        Title="目前在线：0人" Height="600" MinHeight="250" Width="800" MinWidth="450" Closing="Window_Closing">
     <Grid>
         <Grid Margin="10" Name="mainGrid">
             <Grid.ColumnDefinitions>
@@ -52,7 +52,7 @@
                 </Grid.RowDefinitions>
                 <Border BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,5">
                     <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                        <StackPanel Name="messageListSP">
+                        <StackPanel Name="messageListSP" Focusable="False">
 
                         </StackPanel>
                     </ScrollViewer>
@@ -62,7 +62,7 @@
                     <CheckBox Content="显示日志窗口" Name="displayLogCB" IsChecked="True" Click="displayLogCB_Click" Margin="5,0,0,0"/>
                 </StackPanel>
             </Grid>
-            
+
             <GridSplitter Name="logGS" Grid.Column="3" HorizontalAlignment="Stretch" Width="5"/>
 
             <TextBox Name="logTB" Grid.Column="4" Margin="5,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>

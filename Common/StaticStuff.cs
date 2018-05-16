@@ -92,6 +92,8 @@ namespace Common
         public static string FontColor = "FC";
         public static string Sender = "S";
         public static string Remark = "R";
+        public static string Extension = "E";
+        public static string Base64String = "BS";
 #else
         public static bool ShortMode = false;
         public static string CommandType = "CommandType";
@@ -111,6 +113,8 @@ namespace Common
         public static string FontColor = "FontColor";
         public static string Sender = "Sender";
         public static string Remark = "Remark";
+        public static string Extension = "Extension";
+        public static string Base64String = "Base64String";
 #endif
 
     }

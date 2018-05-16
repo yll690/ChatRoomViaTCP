@@ -121,8 +121,8 @@ namespace Server
         private void MessageSorter(byte[] buffer, int start, int length, Socket clientSocket)
         {
             string content = Encoding.Default.GetString(buffer, 0, length);
-            ShowMessage("从" + clientSocket.RemoteEndPoint.ToString() + "接收消息：" + content + "\n");
             MessageDictionary messageD = new MessageDictionary(content);
+            ShowMessage("从" + clientSocket.RemoteEndPoint.ToString() + "接收消息：" + content + "\n");
             CommandType command = (CommandType)Enum.Parse(typeof(CommandType), messageD[MesKeyStr.CommandType]);
 
             switch (command)

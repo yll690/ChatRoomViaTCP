@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Drawing.Text;
 using System.Collections.ObjectModel;
 using Common;
+using System.IO;
 
 namespace Client
 {
@@ -35,7 +27,7 @@ namespace Client
         private bool isUnderLine = false;
         private string fontFamily = "Microsoft YaHei UI";
         private string fontColor = "#FF000000";
-
+        
         private int maxMesListLen = StaticStuff.MaxMesListLen;
         private bool manualClosed = true;
         private bool initialized = false;
@@ -125,41 +117,76 @@ namespace Client
             settings.isUnderLIne = isUnderLine;
             settings.Save();
         }
-        
-        private void SendMessage()
+
+        private void SendMessage(MessageDictionary message)
         {
-            if (contentTB.Text.Length == 0)
-                return;
-
-            int style = 0;
-            if (isBold) style += 1;
-            if (isItalic) style += 10;
-            if (isUnderLine) style += 100;
-
-            MessageDictionary message = new MessageDictionary();
-            message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
             message.Add(MesKeyStr.UserID, currentUser.UserID);
-            message.Add(MesKeyStr.Content, StaticStuff.SepToRep(contentTB.Text));
-            message.Add(MesKeyStr.FontFamily, (string)fontFamilyCB.SelectedItem);
-            message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
-            message.Add(MesKeyStr.FontStyle, style.ToString());
-            message.Add(MesKeyStr.FontColor, fontColor);
-
-            if(chatMode==ChatMode.Group)
+            if (chatMode == ChatMode.Group)
                 connector.SendGroupMessage(message);
             else
             {
                 message.Add(MesKeyStr.TargetUserID, TargetUser.UserID);
                 connector.SendPrivateMessage(message);
             }
+        }
+
+        private void SendPictureMessage(string base64String, string extension)
+        {
+            MessageDictionary message = new MessageDictionary();
+            message.Add(MesKeyStr.MessageType, MessageType.Picture.ToString());
+            message.Add(MesKeyStr.Extension, extension);
+            message.Add(MesKeyStr.Base64String, base64String);
+            SendMessage(message);
+        }
+
+        private void SendTextMessage()
+        {
+            MessageDictionary message = new MessageDictionary();
+            if (contentTB.Text.Length == 0)
+                return;
+            int style = 0;
+            if (isBold) style += 1;
+            if (isItalic) style += 10;
+            if (isUnderLine) style += 100;
+            message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
+            message.Add(MesKeyStr.Content, StaticStuff.SepToRep(contentTB.Text));
+            message.Add(MesKeyStr.FontFamily, (string)fontFamilyCB.SelectedItem);
+            message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
+            message.Add(MesKeyStr.FontStyle, style.ToString());
+            message.Add(MesKeyStr.FontColor, fontColor);
             contentTB.Text = "";
+            SendMessage(message);
         }
 
         //关于窗口事件的事件处理方法
         #region
+        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            openFileDialog.Filter = "图片文件(*.jpg,*.png,*.bmp)|*.jpg;*.png;*.bmp";
+            if(openFileDialog.ShowDialog()== System.Windows.Forms.DialogResult.OK)
+            {
+                FileInfo file = new FileInfo(openFileDialog.FileName);
+                if(file.Length>StaticStuff.BufferLength-1024*1024)
+                {
+                    MessageBox.Show("所选图片太大，不能超过4MB");
+                    return;
+                }
+                byte[] buffer = new byte[file.Length];
+                file.OpenRead().Read(buffer, 0, (int)file.Length);
+                SendPictureMessage(Convert.ToBase64String(buffer), file.Extension);
+            }
+        }
+
         private void sendB_Click(object sender, RoutedEventArgs e)
         {
-            SendMessage();
+            SendTextMessage();
+        }
+        
+        private void contentTB_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
+                SendTextMessage();
         }
 
         private void ChatWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -167,12 +194,6 @@ namespace Client
             SaveSettings();
             if (manualClosed)
                 ManualCloseEvent?.Invoke(this, new EventArgs());
-        }
-
-        private void contentTB_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.Enter)
-                SendMessage();
         }
 
         private void logoutB_Click(object sender, RoutedEventArgs e)
@@ -305,13 +326,13 @@ namespace Client
             if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 color = Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
-                fontColor = color.ToString();
                 ColorSwitch(color);
             }
         }
 
         private void ColorSwitch(Color color)
         {
+            fontColor = color.ToString();
             SolidColorBrush solidColorBrush = new SolidColorBrush(color);
             contentTB.Foreground = solidColorBrush;
             fontColorL.Foreground = solidColorBrush;
@@ -375,6 +396,7 @@ namespace Client
             return;
         }
         #endregion
+
 
     }
 }
