@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Client
+namespace Common
 {
     public enum Sender
     {
@@ -33,7 +33,7 @@ namespace Client
 
     public class MessageDictionary:Dictionary<string,string>
     {
-        public static char separator = StaticStuff.separator;
+        public static char separator = StaticStuff.Separator;
         public MessageDirection MessageStage=MessageDirection.ToServer;
 
         public MessageDictionary()

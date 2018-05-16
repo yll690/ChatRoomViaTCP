@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Common;
 
 namespace Client
 {
@@ -19,11 +20,9 @@ namespace Client
     /// </summary>
     public partial class LoginWindow : Window
     {
-        ClientConnector connector=((App)Application.Current).connector;
-        MessageManager manager = ((App)Application.Current).manager;
-        Properties.Settings settings = Properties.Settings.Default;
-
-        bool dislayLogWindow = true;
+        private ClientConnector connector = ((App)Application.Current).connector;
+        private MessageManager manager = ((App)Application.Current).manager;
+        private Properties.Settings settings = Properties.Settings.Default;
 
         public LoginWindow()
         {
@@ -32,11 +31,6 @@ namespace Client
                 userIDTB.Text = settings.userID;
             connector.LoginEvent += LoginState;
             connector.SignupResultEvent += Connector_SignupResultEvent;
-            if (dislayLogWindow)
-            {
-                LogWindow logWindow = new LogWindow();
-                logWindow.Show();
-            }
         }
 
         private void Connector_SignupResultEvent(object sender, string e)
@@ -69,7 +63,7 @@ namespace Client
 
         private void loginB_Click(object sender, RoutedEventArgs e)
         {
-            if(userIDTB.Text.Length==0||passwordPB.Password.Length==0)
+            if (userIDTB.Text.Length == 0 || passwordPB.Password.Length == 0)
             {
                 MessageBox.Show("用户ID和密码不能为空");
                 return;
@@ -104,6 +98,7 @@ namespace Client
         private void signUpL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             SignUpWindow signUpWindow = new SignUpWindow();
+            signUpWindow.Owner = this;
             if (signUpWindow.ShowDialog() == true)
             {
                 if (!connector.connect())

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="群聊室" Height="500" MinHeight="200" Width="600" MinWidth="420" Closing="Window_Closing">
+        Title="群聊室" Height="500" MinHeight="200" Width="600" MinWidth="420">
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
@@ -47,7 +47,7 @@
                 <RowDefinition Height="100" MinHeight="50"/>
             </Grid.RowDefinitions>
             <Border BorderBrush="Gray" BorderThickness="1">
-                <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Name="messageListSV" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
                     <StackPanel Name="messageListSP">
                     </StackPanel>
                 </ScrollViewer>

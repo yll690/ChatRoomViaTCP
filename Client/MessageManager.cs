@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Common;
 
 namespace Client
 {
@@ -35,18 +36,21 @@ namespace Client
         private void GroupChatWindow_PrivateChatEvent(object sender, User e)
         {
             ChatWindow privateChatWindow = new ChatWindow(e);
-            privateChatWindow.Closed += PrivateWindow_Closed;
             privateWindows.Add(privateChatWindow);
             privateChatWindow.Show();
         }
 
         private void GroupChatWindow_Closed(object sender, EventArgs e)
         {
-            foreach (ChatWindow cw in privateWindows)
-                cw.Close();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (ChatWindow cw in privateWindows)
+                    cw.Close();
+            });
+            connector.Close();
         }
         
-        private void PrivateWindow_Closed(object sender, EventArgs e)
+        private void ChatWindow_ManualCloseEvent(object sender, EventArgs e)
         {
             ChatWindow chatWindow = (ChatWindow)sender;
             privateWindows.Remove(chatWindow);
@@ -79,11 +83,13 @@ namespace Client
         private void Connector_ServerDisconnectEvent(object sender, EventArgs e)
         {
             MessageBox.Show("服务器关闭或失去连接，请重新登录。");
-            GroupChatWindow.Close();
-            foreach (ChatWindow cw in privateWindows)
-                cw.Close();
-            LoginWindow loginWindow = new LoginWindow();
-            loginWindow.Show();
+            LoginWindow loginWindow = null;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                loginWindow = new LoginWindow();
+                loginWindow.Show();
+                GroupChatWindow.Close();
+            });
         }
 
         private void Connector_PrivateMessageEvent(object sender, MessageDictionary e)
@@ -110,8 +116,12 @@ namespace Client
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     chatWindow = new ChatWindow(target);
-                    chatWindow.Closed += PrivateWindow_Closed;
+                    chatWindow.ManualCloseEvent += ChatWindow_ManualCloseEvent;
                     chatWindow.Show();
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        chatWindow.MessageArrive(e);
+                    });
                 });
                 privateWindows.Add(chatWindow);
             }

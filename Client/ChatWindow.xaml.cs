@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing.Text;
 using System.Collections.ObjectModel;
+using Common;
 
 namespace Client
 {
@@ -26,24 +27,25 @@ namespace Client
         public User TargetUser { get => targetUser; private set => targetUser = value; }
         public User CurrentUser { get => currentUser; private set => currentUser = value; }
         public event EventHandler<User> PrivateChatEvent;
-        
-        int fontSize = 12;
-        bool isBold = false;
-        bool isItalic = false;
-        bool isUnderLine = false;
-        string fontFamily = "Microsoft YaHei UI";
-        string fontColor = "#FF000000";
+        public event EventHandler ManualCloseEvent;
 
+        private int fontSize = 12;
+        private bool isBold = false;
+        private bool isItalic = false;
+        private bool isUnderLine = false;
+        private string fontFamily = "Microsoft YaHei UI";
+        private string fontColor = "#FF000000";
+
+        private int maxMesListLen = StaticStuff.MaxMesListLen;
+        private bool manualClosed = true;
+        private bool initialized = false;
         private ChatMode chatMode;
         private User targetUser;
         private User currentUser = ((App)Application.Current).CurrentUser;
-        bool manualClose = true;
-        bool initialized = false;
-
-        ClientConnector connector = ((App)Application.Current).connector;
-        ObservableCollection<User> userList = new ObservableCollection<User>();
-        Properties.Settings settings = Properties.Settings.Default;
-        SolidColorBrush labelCheckedBrush = new SolidColorBrush(Colors.LightGray);
+        private ClientConnector connector = ((App)Application.Current).connector;
+        private ObservableCollection<User> userList = new ObservableCollection<User>();
+        private Properties.Settings settings = Properties.Settings.Default;
+        private SolidColorBrush labelCheckedBrush = new SolidColorBrush(Colors.LightGray);
         
         public ChatWindow()
         {
@@ -60,6 +62,7 @@ namespace Client
         {
             InitializeComponent();
 
+            Closing += ChatWindow_Closing;
             ChatModeP = mode;
             switch (mode)
             {
@@ -90,7 +93,7 @@ namespace Client
             LoadStyle();
             initialized = true;
         }
-
+        
         private void LoadStyle()
         {
             FontSizeSwitch(settings.fontSize);
@@ -125,6 +128,9 @@ namespace Client
         
         private void SendMessage()
         {
+            if (contentTB.Text.Length == 0)
+                return;
+
             int style = 0;
             if (isBold) style += 1;
             if (isItalic) style += 10;
@@ -133,7 +139,7 @@ namespace Client
             MessageDictionary message = new MessageDictionary();
             message.Add(MesKeyStr.MessageType, MessageType.Text.ToString());
             message.Add(MesKeyStr.UserID, currentUser.UserID);
-            message.Add(MesKeyStr.Content, contentTB.Text);
+            message.Add(MesKeyStr.Content, StaticStuff.SepToRep(contentTB.Text));
             message.Add(MesKeyStr.FontFamily, (string)fontFamilyCB.SelectedItem);
             message.Add(MesKeyStr.FontSize, ((ComboBoxItem)fontSizeCB.SelectedItem).Content.ToString());
             message.Add(MesKeyStr.FontStyle, style.ToString());
@@ -146,8 +152,6 @@ namespace Client
                 message.Add(MesKeyStr.TargetUserID, TargetUser.UserID);
                 connector.SendPrivateMessage(message);
             }
-            //MessageUC messageUC = new MessageUC(message, Sender.self);
-            //AddChildToMesListSP(messageUC);
             contentTB.Text = "";
         }
 
@@ -158,14 +162,11 @@ namespace Client
             SendMessage();
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void ChatWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //MessageBox.Show(this,"想要退出还是注销？",MessageBoxButton.YesNoCancel)
             SaveSettings();
-            if (manualClose && chatMode == ChatMode.Group)
-            {
-                connector.Close();
-            }
+            if (manualClosed)
+                ManualCloseEvent?.Invoke(this, new EventArgs());
         }
 
         private void contentTB_KeyDown(object sender, KeyEventArgs e)
@@ -179,7 +180,6 @@ namespace Client
             connector.Logout();
             LoginWindow loginWindow = new LoginWindow();
             loginWindow.Show();
-            manualClose = false;
             Close();
         }
 
@@ -318,14 +318,20 @@ namespace Client
         }
         #endregion
 
-        //关于消息处理的方法
-        #region
         private void AddChildToMesListSP(UIElement element)
         {
-            if (messageListSP.Children.Count == 500)
+            if (messageListSP.Children.Count == maxMesListLen)
                 messageListSP.Children.RemoveAt(0);
             messageListSP.Children.Add(element);
             messageListSV.ScrollToEnd();
+        }
+
+        //供上层调用的方法
+        #region
+        public void CodeClose()
+        {
+            manualClosed = false;
+            Close();
         }
 
         public void MessageArrive(MessageDictionary e)

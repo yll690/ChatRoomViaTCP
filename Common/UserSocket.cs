@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Server
+namespace Common
 {
-    public class UserSocket:Client.User
+    public class UserSocket:User
     {
         public Socket Socket { get; private set; }
         
@@ -19,9 +19,9 @@ namespace Server
             Socket = socket;
         }
 
-        public Client.User ToUser()
+        public User ToUser()
         {
-            return new Client.User(UserID, NickName);
+            return new User(UserID, NickName);
         }
 
     }

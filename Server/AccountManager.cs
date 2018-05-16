@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows;
 using System.Net;
-using Client;
+using Common;
+
 
 namespace Server
 {
@@ -155,15 +156,15 @@ namespace Server
                 if (LoginedUserList[i].UserID.Equals(e[MesKeyStr.TargetUserID]))
                 {
                     UserSocket user = GetUserSocket(e[MesKeyStr.UserID]);
-                    string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
+                                        string ip = ((IPEndPoint)user.Socket.RemoteEndPoint).Address.ToString();
                     e.Add(MesKeyStr.NickName, user.NickName);
                     e.Add(MesKeyStr.IP, ip);
                     e.Add(MesKeyStr.DateTime, DateTime.Now.ToString());
                     MessageArrivedEvent?.Invoke(this, e);
-                    e.Add(MesKeyStr.Sender, Sender.others.ToString());
-                    connector.SendMessage(LoginedUserList[i].Socket, e);
-                    e[MesKeyStr.Sender] = Sender.self.ToString();
+                    e.Add(MesKeyStr.Sender, Sender.self.ToString());
                     connector.SendMessage(user.Socket, e);
+                    e[MesKeyStr.Sender] = Sender.others.ToString();
+                    connector.SendMessage(LoginedUserList[i].Socket, e);
                 }
             }
         }

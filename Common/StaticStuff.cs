@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Client
+namespace Common
 {
     public static class StaticStuff
     {
-        public static char separator = ';';
+        public static char Separator = ';';
+        public static int MaxMesListLen = 500;
+        public static int BufferLength = 5 * 1024 * 1024;
 
         public static string GetMD5(string word)
         {
@@ -56,10 +58,42 @@ namespace Client
                 //throw new Exception(ex.Message);
             }
         }
+
+        public static string SepToRep(string s)
+        {
+            return s.Replace(Separator.ToString(), "\\Sep\\");
+        }
+
+        public static string RepToSep(string s)
+        {
+            return s.Replace("\\Sep\\", Separator.ToString());
+        }
     }
 
     public static class MesKeyStr
     {
+
+#if true
+        public static bool ShortMode = true;
+        public static string CommandType = "CT";
+        public static string UserID = "UID";
+        public static string TargetUserID = "TUID";
+        public static string PassWord = "PW";
+        public static string NickName = "NN";
+        public static string LoginResult = "LR";
+        public static string SignUpResult = "SUR";
+        public static string Content = "C";
+        public static string MessageType = "M";
+        public static string IP = "IP";
+        public static string DateTime = "DT";
+        public static string FontStyle = "FSt";
+        public static string FontSize = "FSi";
+        public static string FontFamily = "FF";
+        public static string FontColor = "FC";
+        public static string Sender = "S";
+        public static string Remark = "R";
+#else
+        public static bool ShortMode = false;
         public static string CommandType = "CommandType";
         public static string UserID = "UserID";
         public static string TargetUserID = "TargetUserID";
@@ -77,5 +111,7 @@ namespace Client
         public static string FontColor = "FontColor";
         public static string Sender = "Sender";
         public static string Remark = "Remark";
+#endif
+
     }
 }

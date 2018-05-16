@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-namespace Client
+
+namespace Common
 {
     public class User
     {
         public string UserID { get; set; }
         public string NickName { get; set; }
-        public static char separator = StaticStuff.separator;
+        public static char separator = StaticStuff.Separator;
 
         public User(string userID)
         {

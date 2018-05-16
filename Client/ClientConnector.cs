@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using Common;
 
 namespace Client
 {
@@ -25,15 +26,17 @@ namespace Client
         public event EventHandler ServerDisconnectEvent;
         public event EventHandler<string> LogEvent;
 
-        private static char separator = StaticStuff.separator;
+        
         private bool isLogined = false;
         private bool isConnected = false;
         private bool listening = true;
         private bool log = true;
-
+        private static char separator = StaticStuff.Separator;
+        private static int bufferLength = StaticStuff.BufferLength;
+        private byte[] buffer = new byte[bufferLength];
         private Properties.Settings settings = Properties.Settings.Default;
         private Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private int bufferLength = 5 * 1024;
+        
         private Thread receiveThread;
 
         public ClientConnector()
@@ -55,7 +58,6 @@ namespace Client
             {
                 while (listening)
                 {
-                    byte[] buffer = new byte[bufferLength];
                     int length = clientSocket.Receive(buffer);
                     int lastIndexOfEnd = 0;
                     for(int i=0;i<length;i++)

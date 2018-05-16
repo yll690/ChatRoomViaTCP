@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Common;
 
 namespace Client
 {
@@ -25,19 +26,20 @@ namespace Client
         public SignUpWindow()
         {
             InitializeComponent();
+            
         }
 
         private void signUpB_Click(object sender, RoutedEventArgs e)
         {
             if (nickNameTB.Text.Length == 0 || passwordPB.Password.Length == 0)
             {
-                MessageBox.Show("昵称或密码不可为空！");
+                MessageBox.Show(this, "昵称或密码不可为空！");
                 return;
             }
             char[] c = {';','\0' };
             if (nickNameTB.Text.IndexOfAny(c) >= 0|| passwordPB.Password.IndexOfAny(c) >= 0)
             {
-                MessageBox.Show("昵称或密码中不可含有';'和'\0'！");
+                MessageBox.Show(this, "昵称或密码中不可含有';'和'\0'！");
                 return;
             }
             NickName = nickNameTB.Text;

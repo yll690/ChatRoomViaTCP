@@ -21,7 +21,7 @@
         <TextBox Name="userIDTB" Grid.Column="1" Margin="3" Padding="2" VerticalContentAlignment="Center"/>
         
         <Label Content="密码" Grid.Row="1"/>
-        <PasswordBox Name="passwordPB" Grid.Column="1" Grid.Row="1" Margin="3" Padding="2" VerticalContentAlignment="Center" Password="10001"/>
+        <PasswordBox Name="passwordPB" Grid.Column="1" Grid.Row="1" Margin="3" Padding="2" VerticalContentAlignment="Center"/>
         
         <Button Name="loginB" Content="登录" Grid.Row="2" Grid.ColumnSpan="2" Width="80" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" Click="loginB_Click" IsDefault="True"/>
         <Label Name="signUpL" Content="注册新用户" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonUp="signUpL_MouseLeftButtonUp" FontSize="10" Foreground="#FF7F7F7F"/>

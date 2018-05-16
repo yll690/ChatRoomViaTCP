@@ -21,7 +21,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Label Content="用户列表:" Margin="0,0,-0.5,0"/>
+                <Label Content="用户列表:"/>
 
                 <ListView Name="userListLV" Grid.Row="1">
                     <ListView.View>
@@ -39,6 +39,7 @@
                     </ListView.ContextMenu>
 
                 </ListView>
+                <Label Name="portL" Content="端口：" Grid.Row="2"/>
             </Grid>
 
 

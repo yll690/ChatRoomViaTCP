@@ -22,6 +22,7 @@ namespace Client
         public string IP { get; set; }
         public int Port { get; set; }
         Properties.Settings settings = Properties.Settings.Default;
+
         public LoginSettingW()
         {
             InitializeComponent();

@@ -7,13 +7,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Windows;
-using Client;
+using Common;
 
 namespace Server
 {
     public class ServerConnector
     {
         public bool log = true;
+        public int Port { get; }
 
         public event EventHandler<MessageDictionary> GroupMessageEvent;
         public event EventHandler<MessageDictionary> PrivateMessageEvent;
@@ -25,19 +26,31 @@ namespace Server
         public event EventHandler ServerClosingEvent;
 
         private int defaultPort = 10000;
-        private int bufferLength = 5 * 1024 * 1024;
+        private static int bufferLength = StaticStuff.BufferLength;
+        private byte[] buffer = new byte[bufferLength];
         private bool listening = true;
-        private static char separator = StaticStuff.separator;
+        private static char separator = StaticStuff.Separator;
         private Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         
         public ServerConnector()
         {
             //IPAddress ip = IPAddress.Parse(defaultIP);
             //serverSocket.Bind(new IPEndPoint(ip, defaultPort));
-            serverSocket.Bind(new IPEndPoint(IPAddress.Any, defaultPort));
+            try
+            {
+                serverSocket.Bind(new IPEndPoint(IPAddress.Any, defaultPort));
+            }
+            catch(Exception e)
+            {
+                if (((SocketException)e).ErrorCode == 10048)
+                    serverSocket.Bind(new IPEndPoint(IPAddress.Any, 0));
+            }
+
+            Port = ((IPEndPoint)serverSocket.LocalEndPoint).Port;
             serverSocket.Listen(10);
             Thread listenThread = new Thread(ListenFromClient);
             listenThread.Start();
+            
         }
 
         private void ShowMessage(string s)
@@ -74,7 +87,6 @@ namespace Server
         private void ReceiveMessage(object socket)
         {
             Socket receiveSocket = (Socket)socket;
-            byte[] buffer = new byte[bufferLength];
             while (listening)
             {
                 try

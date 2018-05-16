@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Client;
+using Common;
 
 namespace Server
 {
@@ -23,6 +23,7 @@ namespace Server
     public partial class SeverChatWindow : Window
     {
         private bool displayStyle = false;
+        private int maxMesListLen = StaticStuff.MaxMesListLen;
 
         private ServerConnector connector = ((App)Application.Current).connector;
         private AccountManager manager = ((App)Application.Current).accountManager;
@@ -32,6 +33,7 @@ namespace Server
         {
             InitializeComponent();
             userListLV.ItemsSource = userList;
+            portL.Content = ("端口：" + connector.Port);
 
             manager.UserJoinEvent += Manager_UserJoinEvent;
             manager.UserQuitEvent += Manager_UserQuitEvent;
@@ -50,7 +52,6 @@ namespace Server
         private void removeUser_Click(object sender, RoutedEventArgs e)
         {
             manager.RemoveUser(userList[userListLV.SelectedIndex]);
-            userList.RemoveAt(userListLV.SelectedIndex);
         }
 
         private void disPlayStyleCB_Click(object sender, RoutedEventArgs e)
@@ -102,13 +103,17 @@ namespace Server
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (messageListSP.Children.Count == 500)
+                if (messageListSP.Children.Count >= maxMesListLen)
                     messageListSP.Children.RemoveAt(0);
                 if ((CommandType)Enum.Parse(typeof(CommandType), e[MesKeyStr.CommandType]) == CommandType.GroupMessage)
                     e.Add(MesKeyStr.Remark, "群聊消息");
                 else
                     e.Add(MesKeyStr.Remark, "私聊消息，目标："+e[MesKeyStr.UserID]);
-                MessageUC messageUC = new MessageUC(e, displayStyle);
+
+                DisplayMethod displayMethod=DisplayMethod.OnlyRemark;
+                if (displayStyle)
+                    displayMethod = DisplayMethod.Both;
+                MessageUC messageUC = new MessageUC(e, displayMethod);
                 messageListSP.Children.Add(messageUC);
                 messageListSV.ScrollToEnd();
             });

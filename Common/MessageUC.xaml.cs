@@ -13,43 +13,41 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Client
+namespace Common
 {
+    public enum DisplayMethod
+    {
+        None,
+        OnlyStyle,
+        OnlyRemark,
+        Both
+    }
+
     /// <summary>
     /// MessageUC.xaml 的交互逻辑
     /// </summary>
     public partial class MessageUC : UserControl
     {
         public MessageDictionary ChatMessageP { get;private set; }
+        public DisplayMethod DisplayMethodP { get; private set; }
 
-        public MessageUC(MessageDictionary message, bool displayStyle)
+        public MessageUC(MessageDictionary message, DisplayMethod displayMethod):this(message)
         {
-            InitializeComponent();
-            ChatMessageP = message;
-            if (displayStyle == true)
-                Display();
-            else
-            {
-                contentB.Background = null;
-                contentB.Margin = new Thickness(5, 0, 5, 5);
-                contentTB.Margin = new Thickness(0);
-                DisplayWithNoStyle();
-            }
+            DisplayMethodP = displayMethod;
         }
 
         public MessageUC(MessageDictionary message)
         {
             InitializeComponent();
+            DisplayMethodP = DisplayMethod.OnlyStyle;
             ChatMessageP = message;
             Display();
         }
 
-        public MessageUC(MessageDictionary message, Sender sender)
+        public MessageUC(MessageDictionary message, Sender sender) : this(message)
         {
-            InitializeComponent();
-            ChatMessageP = message;
             Display();
-            if(sender==Sender.self)
+            if (sender==Sender.self)
             {
                 contentB.Margin = new Thickness(50, 2, 5, 5);
                 contentB.Background = new SolidColorBrush(Color.FromRgb(120,205,248));
@@ -60,18 +58,28 @@ namespace Client
 
         private void DisplayWithNoStyle()
         {
-            contentTB.ToolTip = ChatMessageP[MesKeyStr.Content];
-            contentTB.Text = ChatMessageP[MesKeyStr.Content];
+            string content = StaticStuff.RepToSep(ChatMessageP[MesKeyStr.Content]);
+            contentTB.ToolTip = content;
+            contentTB.Text = content;
             nickNameL.Content = ChatMessageP[MesKeyStr.NickName] + "(" + ChatMessageP[MesKeyStr.UserID] + ")";
             ipAdressL.Content = ChatMessageP[MesKeyStr.IP];
             timeL.Content = ChatMessageP[MesKeyStr.DateTime];
-            if (ChatMessageP.ContainsKey(MesKeyStr.Remark))
+            if ((DisplayMethodP == DisplayMethod.OnlyRemark || DisplayMethodP == DisplayMethod.Both) && ChatMessageP.ContainsKey(MesKeyStr.Remark))
                 remarkL.Content = ChatMessageP[MesKeyStr.Remark];
         }
 
         private void Display()
         {
             DisplayWithNoStyle();
+            if (DisplayMethodP == DisplayMethod.OnlyRemark || DisplayMethodP == DisplayMethod.None)
+            {
+                contentB.Background = null;
+                contentB.Margin = new Thickness(5, 0, 5, 5);
+                contentTB.Margin = new Thickness(0);
+                DisplayWithNoStyle();
+                return;
+            }
+
             FontFamilyConverter fontFamilyConverter = new FontFamilyConverter();
             try
             {
