@@ -2,6 +2,7 @@
 Client2.csproj
 Server2.csproj
 update.bat
+Accounts.dat
 other/
 
 ## Ignore Visual Studio temporary files, build results, and
