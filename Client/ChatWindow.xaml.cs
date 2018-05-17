@@ -358,10 +358,7 @@ namespace Client
         public void MessageArrive(MessageDictionary e)
         {
             MessageUC messageUC;
-            if ((Sender)Enum.Parse(typeof(Sender), e[MesKeyStr.Sender]) == Sender.self)
-                messageUC = new MessageUC(e, Sender.self);
-            else
-                messageUC = new MessageUC(e);
+            messageUC = new MessageUC(e, (Sender)Enum.Parse(typeof(Sender), e[MesKeyStr.Sender]));
             AddChildToMesListSP(messageUC);
         }
 

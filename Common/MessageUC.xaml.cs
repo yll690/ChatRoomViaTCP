@@ -39,7 +39,7 @@ namespace Common
             Display();
         }
 
-        public MessageUC(MessageDictionary message)
+        private MessageUC(MessageDictionary message)
         {
             InitializeComponent();
             DisplayMethodP = DisplayMethod.OnlyStyle;
