@@ -104,7 +104,7 @@ namespace Client
                     }
                 case CommandType.SignUpResult:
                     {
-                        SignupResultEvent?.Invoke(this, messageD[MesKeyStr.UserID]);
+                        SignupResultEvent?.Invoke(this, messageD[MesKeyStr.SignUpResult]);
                         break;
                     }
                 case CommandType.GroupMessage:
@@ -264,9 +264,10 @@ namespace Client
                     //clientSocket.Shutdown(SocketShutdown.Both);
                 }
                 clientSocket.Close();
+                clientSocket = null;
             }
-            //if (receiveThread != null && receiveThread.IsAlive)
-            //   receiveThread.Abort();
+            if (receiveThread != null && receiveThread.IsAlive)
+               receiveThread.Abort();
         }
     }
 }

@@ -70,7 +70,7 @@ namespace Server
         {
             foreach (Account account in AccountList)
             {
-                if (userID == account.UserID)
+                if (userID.Equals(account.UserID))
                     return account;
             }
             return null;

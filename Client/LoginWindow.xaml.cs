@@ -82,6 +82,8 @@ namespace Client
         {
             if (connector.IsLogined == false)
                 connector.Close();
+            connector.LoginEvent -= LoginState;
+            connector.SignupResultEvent -= Connector_SignupResultEvent;
         }
 
         private void loginSettingL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -106,7 +108,7 @@ namespace Client
                     MessageBox.Show(this, "注册失败，无法连接服务器！");
                     return;
                 }
-                connector.SignUp(signUpWindow.NickName, StaticStuff.GetMD5(signUpWindow.Password));
+                connector.SignUp(signUpWindow.NickName, signUpWindow.Password);
             }
         }
     }

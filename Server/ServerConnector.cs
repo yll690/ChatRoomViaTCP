@@ -111,8 +111,16 @@ namespace Server
                 }
                 catch(Exception e)
                 {
+                    if(e.GetType()==typeof(SocketException))
+                    {
+                        SocketException se = (SocketException)e;
+                        if (se.ErrorCode == 10054)
+                        {
+                            DisconnectEvent?.Invoke(this, receiveSocket);
+                            Thread.CurrentThread.Abort();
+                        }
+                    }
                     ShowMessage(e.Message + "\n" + e.StackTrace + "\n");
-                    //Thread.CurrentThread.Abort();
                 }
             }
             ShowMessage("接收"+ receiveSocket.RemoteEndPoint.ToString()+ "的线程已结束\n");

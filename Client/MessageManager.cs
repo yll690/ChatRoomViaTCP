@@ -36,6 +36,7 @@ namespace Client
         private void GroupChatWindow_PrivateChatEvent(object sender, User e)
         {
             ChatWindow privateChatWindow = new ChatWindow(e);
+            privateChatWindow.ManualCloseEvent += ChatWindow_ManualCloseEvent;
             privateWindows.Add(privateChatWindow);
             privateChatWindow.Show();
         }
@@ -45,8 +46,9 @@ namespace Client
             Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (ChatWindow cw in privateWindows)
-                    cw.Close();
+                    cw.CodeClose();
             });
+            privateWindows.Clear();
             connector.Close();
         }
         
@@ -99,7 +101,6 @@ namespace Client
             string targetUserID = s == Sender.others ? e[MesKeyStr.UserID] : e[MesKeyStr.TargetUserID];
             foreach (ChatWindow cw in privateWindows)
             {
-
                 if (cw.TargetUser.UserID.Equals(targetUserID))
                 {
                     found = true;

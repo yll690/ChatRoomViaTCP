@@ -192,8 +192,10 @@ namespace Client
         private void ChatWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SaveSettings();
-            if (manualClosed)
+            if (ChatModeP == ChatMode.Private && manualClosed)
                 ManualCloseEvent?.Invoke(this, new EventArgs());
+            if(ChatModeP==ChatMode.Group && manualClosed)
+                connector.Close();
         }
 
         private void logoutB_Click(object sender, RoutedEventArgs e)

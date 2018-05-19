@@ -61,9 +61,9 @@
                     <RowDefinition Height="25" />
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Name="toolBarSP" Orientation="Horizontal">
-                    <ComboBox Name="fontFamilyCB" Width="120" Margin="0" Height="23" SelectionChanged="fontFamilyCB_SelectionChanged"/>
-                    <ComboBox Name="fontSizeCB" Width="45" SelectedIndex="4" VerticalContentAlignment="Center" Height="23" Margin="5,0" SelectionChanged="fontSizeCB_SelectionChanged">
+                <StackPanel Name="toolBarSP" Orientation="Horizontal" Margin="0,2">
+                    <ComboBox Name="fontFamilyCB" Width="120" Margin="0" Height="20" SelectionChanged="fontFamilyCB_SelectionChanged"/>
+                    <ComboBox Name="fontSizeCB" Width="45" SelectedIndex="4" VerticalContentAlignment="Center" Height="20" Margin="5,0" SelectionChanged="fontSizeCB_SelectionChanged">
                         <ComboBoxItem Content="8"/>
                         <ComboBoxItem Content="9"/>
                         <ComboBoxItem Content="10"/>
@@ -79,10 +79,10 @@
                         <ComboBoxItem Content="24"/>
                         <ComboBoxItem Content="26"/>
                     </ComboBox>
-                    <Label Content="B" Name="boldL" MouseLeftButtonUp="boldL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0"/>
-                    <Label Content="I" Name="italicL" MouseLeftButtonUp="italicL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0"/>
-                    <Label Content="U" Name="underLineL" MouseLeftButtonUp="underLineL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0"/>
-                    <Label Content="A" Name="fontColorL" MouseLeftButtonUp="fontColorL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" FontWeight="Bold" Background="{x:Null}" Margin="2,0,0,0"/>
+                    <Label Content="B" Name="boldL" MouseLeftButtonUp="boldL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0" Height="20"/>
+                    <Label Content="I" Name="italicL" MouseLeftButtonUp="italicL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0" Height="20"/>
+                    <Label Content="U" Name="underLineL" MouseLeftButtonUp="underLineL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" Background="{x:Null}" Margin="2,0,0,0" Height="20"/>
+                    <Label Content="A" Name="fontColorL" MouseLeftButtonUp="fontColorL_MouseLeftButtonUp" Padding="0" Width="20" VerticalAlignment="Center" FontSize="16" HorizontalContentAlignment="Center" Cursor="Hand" FontWeight="Bold" Background="{x:Null}" Margin="2,0,0,0" Height="20"/>
                     <Image Source="picture.png" MouseLeftButtonUp="Image_MouseLeftButtonUp" Width="18" Cursor="Hand" Margin="5,0,0,0"/>
                 </StackPanel>
                 <Grid Grid.Row="1" Grid.RowSpan="2">

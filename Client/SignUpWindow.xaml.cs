@@ -26,7 +26,7 @@ namespace Client
         public SignUpWindow()
         {
             InitializeComponent();
-            
+
         }
 
         private void signUpB_Click(object sender, RoutedEventArgs e)
@@ -36,10 +36,15 @@ namespace Client
                 MessageBox.Show(this, "昵称或密码不可为空！");
                 return;
             }
-            char[] c = {';','\0' };
-            if (nickNameTB.Text.IndexOfAny(c) >= 0|| passwordPB.Password.IndexOfAny(c) >= 0)
+            char[] c = { ';', '\0' };
+            if (nickNameTB.Text.IndexOfAny(c) >= 0 || passwordPB.Password.IndexOfAny(c) >= 0)
             {
                 MessageBox.Show(this, "昵称或密码中不可含有';'和'\0'！");
+                return;
+            }
+            if (nickNameTB.Text.Length > 20 || passwordPB.Password.Length > 20)
+            {
+                MessageBox.Show(this, "昵称或密码不得超过20字符长！");
                 return;
             }
             NickName = nickNameTB.Text;
