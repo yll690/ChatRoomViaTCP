@@ -144,6 +144,11 @@ namespace Client
             MessageDictionary message = new MessageDictionary();
             if (contentTB.Text.Length == 0)
                 return;
+            if(contentTB.Text.Length>100000)
+            {
+                MessageBox.Show("输入的消息过长，不能超过100000字！");
+                return;
+            }
             int style = 0;
             if (isBold) style += 1;
             if (isItalic) style += 10;
@@ -223,7 +228,8 @@ namespace Client
         #region
         private void fontFamilyCB_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FontFamilySwitch((string)fontFamilyCB.SelectedItem);
+            if (initialized)
+                FontFamilySwitch((string)fontFamilyCB.SelectedItem);
         }
 
         private void FontFamilySwitch(string font)
@@ -233,6 +239,8 @@ namespace Client
             {
                 contentTB.FontFamily = (FontFamily)fontFamilyConverter.ConvertFromString(font);
                 fontFamily = font;
+                settings.fontFamily = fontFamily;
+                settings.Save();
             }
             catch (Exception ex)
             {
@@ -250,6 +258,9 @@ namespace Client
         {
             contentTB.FontSize = size;
             fontSize = size;
+            settings.fontSize = fontSize;
+            settings.Save();
+
         }
 
         private void boldL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -273,7 +284,8 @@ namespace Client
                 boldL.Background = null;
                 contentTB.FontWeight = FontWeights.Normal;
             }
-
+            settings.isBold = isBold;
+            settings.Save();
         }
 
         private void italicL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -297,6 +309,8 @@ namespace Client
                 italicL.Background = null;
                 contentTB.FontStyle = FontStyles.Normal;
             }
+            settings.isItalic = isItalic;
+            settings.Save();
         }
 
         private void underLineL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -319,6 +333,8 @@ namespace Client
                 underLineL.Background = null;
                 contentTB.TextDecorations = null;
             }
+            settings.isUnderLIne = isUnderLine;
+            settings.Save();
         }
 
         private void fontColorL_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -335,6 +351,8 @@ namespace Client
         private void ColorSwitch(Color color)
         {
             fontColor = color.ToString();
+            settings.fontColor = fontColor;
+            settings.Save();
             SolidColorBrush solidColorBrush = new SolidColorBrush(color);
             contentTB.Foreground = solidColorBrush;
             fontColorL.Foreground = solidColorBrush;

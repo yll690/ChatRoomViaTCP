@@ -33,7 +33,8 @@ namespace Server
         {
             InitializeComponent();
             userListLV.ItemsSource = userList;
-            portL.Content = ("端口：" + connector.Port);
+            portTB.Text = connector.Port.ToString();
+            portTB.ToolTip = connector.Port.ToString();
 
             manager.UserJoinEvent += Manager_UserJoinEvent;
             manager.UserQuitEvent += Manager_UserQuitEvent;
@@ -91,6 +92,53 @@ namespace Server
             else
                 logTB.Text += log + "\n";
             logTB.ScrollToEnd();
+        }
+
+        private void changePortB_Click(object sender, RoutedEventArgs e)
+        {
+            portTB.IsReadOnly = !portTB.IsReadOnly;
+            if (portTB.IsReadOnly == true)
+            {
+                int port;
+                try
+                {
+                    port = Convert.ToInt32(portTB.Text);
+                    if (port < 0 || port > 65535)
+                        throw new ArgumentOutOfRangeException(nameof(port), port, "输入的值应该在0-65535之间！");
+                    if (port != Properties.Settings.Default.defaultPort)
+                    {
+                        Properties.Settings.Default.defaultPort = port;
+                        Properties.Settings.Default.Save();
+                        if (port != connector.Port)
+                            portTB.ToolTip = "目前端口仍是" + connector.Port + "，下次启动时，将变为" + port;
+                        else
+                            portTB.ToolTip = connector.Port.ToString();
+                        MessageBox.Show("修改成功，请重启服务器以应用修改。");
+                    }
+                    portTB.Text = connector.Port.ToString();
+                    changePortB.Content = "修改";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("请输入正确的端口！\n" + ex.Message);
+                    portTB.IsReadOnly = !portTB.IsReadOnly;
+                }
+            }
+            else
+            {
+                changePortB.Content = "确认";
+                portTB.Focus();
+                portTB.SelectAll();
+            }
+        }
+
+        private void portTB_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (portTB.IsReadOnly == false && e.Key == Key.Enter)
+            {
+                portTB.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                changePortB_Click(this, new RoutedEventArgs());
+            }
         }
 
         //关于manager和connector的事件处理方法

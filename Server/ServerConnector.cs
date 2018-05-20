@@ -25,7 +25,7 @@ namespace Server
         public event EventHandler<Socket> DisconnectEvent;
         public event EventHandler ServerClosingEvent;
 
-        private int defaultPort = 10000;
+        private int defaultPort = Properties.Settings.Default.defaultPort;
         private static int bufferLength = StaticStuff.BufferLength;
         private byte[] buffer = new byte[bufferLength];
         private bool listening = true;
@@ -34,8 +34,6 @@ namespace Server
         
         public ServerConnector()
         {
-            //IPAddress ip = IPAddress.Parse(defaultIP);
-            //serverSocket.Bind(new IPEndPoint(ip, defaultPort));
             try
             {
                 serverSocket.Bind(new IPEndPoint(IPAddress.Any, defaultPort));

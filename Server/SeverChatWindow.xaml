@@ -39,7 +39,17 @@
                     </ListView.ContextMenu>
 
                 </ListView>
-                <Label Name="portL" Content="端口：" Grid.Row="2"/>
+                <Grid Grid.Row="2" Margin="0,3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Name="portL" Content="端口：" Margin="0,0,0.5,0"/>
+                    <TextBox Name="portTB" Text="10000" Grid.Column="1" VerticalAlignment="Center" Padding="2,1" IsReadOnly="True" Width="50" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MaxLength="5" KeyUp="portTB_KeyUp"/>
+                    <Button Name="changePortB" Content="修改" Grid.Column="2" Height="20" Width="40" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,2,5,3" Click="changePortB_Click"/>
+                </Grid>
+
             </Grid>
 
 
