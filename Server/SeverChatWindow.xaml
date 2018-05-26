@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server"
         mc:Ignorable="d"
-        Title="目前在线：0人" Height="600" MinHeight="250" Width="800" MinWidth="450" Closing="Window_Closing">
+        Title="目前在线：0人" Height="400" MinHeight="250" Width="600" MinWidth="450" Closing="Window_Closing">
     <Grid>
         <Grid Margin="10" Name="mainGrid">
             <Grid.ColumnDefinitions>

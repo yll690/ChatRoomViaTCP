@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Common.Account">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAEAAAAAAgAAAAAAAECAAAAAAAAIAA=</HashCode>
+      <FileName>Account.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.MessageDictionary">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAEAAAAAAAAEAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChatMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.MessageUC" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAEAAAAAABAAgAAAAQAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MessageUC.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Common.StaticStuff">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAgAAAAAABAAAAAAgAQAAAI=</HashCode>
+      <FileName>StaticStuff.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.MesKeyStr">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAApCAAgAEAgCAAAAAAggAIAAAAQUAAQAAEAAIAQA=</HashCode>
+      <FileName>StaticStuff.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.User">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAIAAAEgAAAAAgAEAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Common.UserSocket">
+    <Position X="0.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>UserSocket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Common.Sender">
+    <Position X="4" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>ChatMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.ChatMode">
+    <Position X="2.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChatMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.MessageType">
+    <Position X="4" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>ChatMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.MessageDirection">
+    <Position X="2.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAABAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ChatMessage.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.CommandType">
+    <Position X="7.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEMACCAAAAACAAAAAAABAIAAAgAAAAAAAAQAAAEAAA=</HashCode>
+      <FileName>CommandType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Common.DisplayMethod">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAgAAAAAAAAAAAAAAACAAAAEAAAA=</HashCode>
+      <FileName>MessageUC.xaml.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Microsoft YaHei UI" Size="9" />
+</ClassDiagram>
