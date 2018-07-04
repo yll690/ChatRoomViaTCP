@@ -166,6 +166,7 @@ namespace Client
                     clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 if (clientSocket.Connected == false)
                     clientSocket.Connect(iPEndPoint);
+                clientSocket.SendTimeout = 5000;
                 listening = true;
                 receiveThread = new Thread(ReceiveFromServer);
                 receiveThread.Start();

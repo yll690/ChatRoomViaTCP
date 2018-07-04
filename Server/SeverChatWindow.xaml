@@ -9,7 +9,7 @@
     <Grid>
         <Grid Margin="10" Name="mainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="160" MinWidth="70"/>
+                <ColumnDefinition Width="160" MinWidth="160"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="5*" MinWidth="180"/>
                 <ColumnDefinition Width="auto"/>
@@ -28,7 +28,7 @@
                         <GridView>
                             <GridView.Columns>
                                 <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Path=UserID}"/>
-                                <GridViewColumn Header="昵称" Width="100" DisplayMemberBinding="{Binding Path=NickName}"/>
+                                <GridViewColumn Header="昵称" Width="80" DisplayMemberBinding="{Binding Path=NickName}"/>
                             </GridView.Columns>
                         </GridView>
                     </ListView.View>
@@ -47,7 +47,7 @@
                     </Grid.ColumnDefinitions>
                     <Label Name="portL" Content="端口：" Margin="0,0,0.5,0"/>
                     <TextBox Name="portTB" Text="10000" Grid.Column="1" VerticalAlignment="Center" Padding="2,1" IsReadOnly="True" Width="50" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" MaxLength="5" KeyUp="portTB_KeyUp"/>
-                    <Button Name="changePortB" Content="修改" Grid.Column="2" Height="20" Width="40" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,2,5,3" Click="changePortB_Click"/>
+                    <Button Name="changePortB" Content="修改" Grid.Column="2" Height="20" Width="40" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,2,5,3" Click="changePortB_Click"/>
                 </Grid>
 
             </Grid>
@@ -75,7 +75,7 @@
 
             <GridSplitter Name="logGS" Grid.Column="3" HorizontalAlignment="Stretch" Width="5"/>
 
-            <TextBox Name="logTB" Grid.Column="4" Margin="5,0,0,0" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            <TextBox Name="logTB" Grid.Column="4" Margin="5,0,0,0" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
         </Grid>
     </Grid>
 </Window>

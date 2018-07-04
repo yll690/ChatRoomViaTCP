@@ -9,11 +9,11 @@
 
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" MinWidth="200"/>
         </Grid.ColumnDefinitions>
-        <Grid Name="leftGrid" Margin="0,0,5,0" MinWidth="70">
+        <Grid Name="leftGrid" Margin="0,0,5,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
@@ -25,7 +25,7 @@
                     <GridView>
                         <GridView.Columns>
                             <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding Path=UserID}"/>
-                            <GridViewColumn Header="昵称" Width="90" DisplayMemberBinding="{Binding Path=NickName}"/>
+                            <GridViewColumn Header="昵称" Width="80" DisplayMemberBinding="{Binding Path=NickName}"/>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>

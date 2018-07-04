@@ -35,6 +35,14 @@ namespace Client
 
         private void GroupChatWindow_PrivateChatEvent(object sender, User e)
         {
+            foreach (ChatWindow cw in privateWindows)
+            {
+                if (cw.TargetUser.UserID.Equals(e.UserID))
+                {
+                    cw.Activate();
+                    return;
+                }
+            }
             ChatWindow privateChatWindow = new ChatWindow(e);
             privateChatWindow.ManualCloseEvent += ChatWindow_ManualCloseEvent;
             privateWindows.Add(privateChatWindow);

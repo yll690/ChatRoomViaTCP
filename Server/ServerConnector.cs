@@ -37,6 +37,7 @@ namespace Server
             try
             {
                 serverSocket.Bind(new IPEndPoint(IPAddress.Any, defaultPort));
+                serverSocket.SendTimeout = 5000;
             }
             catch(Exception e)
             {
@@ -102,6 +103,8 @@ namespace Server
                         for (int i = 0; i < length; i++)
                             if (buffer[i] == '\0')
                             {
+                                if (i == 0)
+                                    continue;
                                 MessageSorter(buffer, lastIndexOfEnd, i - 1 - lastIndexOfEnd,receiveSocket);
                                 lastIndexOfEnd = i + 1;
                             }
